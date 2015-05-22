@@ -64,13 +64,13 @@ public class Sheet {
     if (formulaValue == null) {
       int styleIndex = style.index();
       String pos = UtilOffice.toTablePosition(curRow, col - 1);
-      out.printf("<c r=\"%s\" s=\"%d\" t=\"s\"><f></f></c>", pos, styleIndex);
+      out.printf("<c r=\"%s\" s=\"%d\" t=\"e\"><f></f><v>0.0<v/></c>", pos, styleIndex);
       out.println();
     } else {
       int styleIndex = style.index();
-      int strIndex = strs.index(formulaValue);
       String pos = UtilOffice.toTablePosition(curRow, col - 1);
-      out.printf("<c r=\"%s\" s=\"%d\" t=\"s\"><f>%d</f><v></v></c>", pos, styleIndex, strIndex);
+      out.printf("<c r=\"%s\" s=\"%d\" t=\"e\"><f>%s</f><v>0.0</v></c>", pos, styleIndex,
+          formulaValue);
       out.println();
     }
     return this;

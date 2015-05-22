@@ -13,7 +13,7 @@ public class GenXlsxProbe2 {
     createSheet1(f);
     createSheet2(f);
     
-    FileOutputStream fout = new FileOutputStream("/home/pompei/tmp/asd3.xlsx");
+    FileOutputStream fout = new FileOutputStream("/home/ilyas/tmp/asd3.xlsx");
     
     f.complete(fout);
     
@@ -41,6 +41,13 @@ public class GenXlsxProbe2 {
       s.cellStr(1, "No");
       s.cellStr(2, "ФИО");
       s.cellStr(3, "История");
+      s.row().finish();
+    }
+    {
+      s.row().start();
+      s.cellDouble(1, 100);
+      s.cellDouble(2, 100);
+      s.cellFormula(3, "A5*100/B5");
       s.row().finish();
     }
   }
