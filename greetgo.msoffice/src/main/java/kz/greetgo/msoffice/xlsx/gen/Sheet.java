@@ -56,6 +56,26 @@ public class Sheet {
     this.defaultRowHeight = defaultRowHeight;
   }
   
+  public Sheet cellFormula(int col, String formulaValue) {
+    init();
+    setLastColumn(col);
+    style.clearNumFmt();
+    
+    if (formulaValue == null) {
+      int styleIndex = style.index();
+      String pos = UtilOffice.toTablePosition(curRow, col - 1);
+      out.printf("<c r=\"%s\" s=\"%d\" t=\"s\"><f></f></c>", pos, styleIndex);
+      out.println();
+    } else {
+      int styleIndex = style.index();
+      int strIndex = strs.index(formulaValue);
+      String pos = UtilOffice.toTablePosition(curRow, col - 1);
+      out.printf("<c r=\"%s\" s=\"%d\" t=\"s\"><f>%d</f><v></v></c>", pos, styleIndex, strIndex);
+      out.println();
+    }
+    return this;
+  }
+  
   public Sheet cellStr(int col, String strValue) {
     init();
     setLastColumn(col);
