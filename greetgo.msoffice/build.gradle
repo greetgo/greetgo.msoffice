@@ -19,6 +19,23 @@ jar {
   }
 }
 
+
+
+sourceSets {
+  main {
+    resources.srcDirs = ["src/main/java", "src/main/resources"]
+  }
+  test {
+    resources.srcDirs = ["src/test/java", "src/test/resources"]
+  }
+}
+compileJava {
+  options.encoding = "UTF-8"
+}
+compileTestJava {
+  options.encoding = "UTF-8"
+}
+
 eclipse {
   jdt {
     //
@@ -29,7 +46,6 @@ eclipse {
     targetCompatibility = 1.7
   }
 
-  pathVariables 'GRADLE_USER_HOME': gradle.gradleUserHomeDir
 }
 
 project.eclipse.classpath.file.whenMerged { cp ->
@@ -42,18 +58,11 @@ project.eclipse.classpath.file.whenMerged { cp ->
   }
 }
 
-import org.gradle.plugins.ide.eclipse.model.SourceFolder as SF
-
-eclipse.classpath.file.whenMerged { cp ->
-  cp.entries.findAll { it instanceof SF }*.output = "build/eclipse_bin"
-}
-
 repositories {
   maven {
     name 'Our repository'
     url 'http://192.168.11.11:8080/repository/internal/'
   }
-  mavenCentral()
 }
 
 configurations { repoUpload }
