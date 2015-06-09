@@ -11,9 +11,16 @@ import java.util.List;
 import kz.greetgo.msoffice.UtilOffice;
 
 public class Content {
+  
+  private final Xlsx xlsx;
+  
   private final List<Sheet> sheets = new ArrayList<Sheet>();
   final CoreProperties coreProperties = new CoreProperties();
   private String workDir;
+  
+  Content(Xlsx xlsx) {
+    this.xlsx = xlsx;
+  }
   
   public void addSheet(Sheet sheet) {
     sheets.add(sheet);
@@ -27,6 +34,7 @@ public class Content {
     printContentTypes();
     printWorkbook();
     printThemes();
+    printCharts();
     printXl_rels();
     print_rels();
     printAppProperties();
@@ -54,10 +62,22 @@ public class Content {
         + "ContentType=\"application/vnd.openxmlformats-officedocument"
         + ".extended-properties+xml\" />");
     
+    for (Chart chart : xlsx.getCharts()) {
+      out.print("<Override PartName=\"/xl/charts/chart");
+      out.print(chart.getId());
+      out.println(".xml\" ContentType=\"application/vnd.openxmlformats-officedocument.drawingml.chart+xml\"/>");
+    }
+    
     for (Sheet sheet : sheets) {
       out.println("<Override PartName=\"/xl/worksheets/" + sheet.name() + ".xml\" "
           + "ContentType=\"application/"
           + "vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml\" />");
+      
+      if (sheet.getDrawing().size() < 1) continue;
+      
+      out.print("<Override PartName=\"/xl/drawings/drawing");
+      out.print(sheet.getDrawingId());
+      out.println(".xml\" ContentType=\"application/vnd.openxmlformats-officedocument.drawing+xml\"/>");
     }
     
     out.println("<Override PartName=\"/xl/sharedStrings.xml\" "
@@ -231,5 +251,55 @@ public class Content {
     PrintStream out = new PrintStream(dir + "/core.xml", "UTF-8");
     coreProperties.print(out);
     out.close();
+  }
+  
+  private void printCharts() throws Exception {
+    
+    if (xlsx.getCharts().size() < 1) return;
+    
+    String dir = workDir + "/xl/charts";
+    new File(dir).mkdirs();
+    
+    for (Chart chart : xlsx.getCharts()) {
+      PrintStream os = new PrintStream(dir + "/chart" + chart.getId() + ".xml", "UTF-8");
+      chart.print(os);
+      os.close();
+    }
+    
+    dir = workDir + "/xl/drawings";
+    new File(dir).mkdirs();
+    String dirrel = workDir + "/xl/drawings/_rels";
+    new File(dirrel).mkdirs();
+    
+    for (Sheet sheet : sheets) {
+      if (sheet.getDrawing().size() < 1) continue;
+      
+      PrintStream os = new PrintStream(dir + "/drawing" + sheet.getDrawingId() + ".xml", "UTF-8");
+      os.println("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
+      os.println("<xdr:wsDr xmlns:xdr=\"http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">");
+      
+      PrintStream osrel = new PrintStream(dirrel + "/drawing" + sheet.getDrawingId() + ".xml.rels",
+          "UTF-8");
+      osrel.println("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
+      osrel
+          .println("<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">");
+      
+      for (TwoCellAnchor anch : sheet.getDrawing()) {
+        anch.print(os);
+        
+        osrel.print("<Relationship Id=\"rId");
+        osrel.print(anch.getChartId());
+        osrel
+            .print("\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/chart\" Target=\"../charts/chart");
+        osrel.print(anch.getChartId());
+        osrel.println(".xml\"/>");
+      }
+      
+      os.print("</xdr:wsDr>");
+      os.close();
+      
+      osrel.print("</Relationships>");
+      osrel.close();
+    }
   }
 }

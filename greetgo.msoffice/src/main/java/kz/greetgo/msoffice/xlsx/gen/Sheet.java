@@ -14,6 +14,9 @@ import kz.greetgo.msoffice.UtilOffice;
 import kz.greetgo.msoffice.xlsx.parse.SharedStrings;
 
 public class Sheet {
+  
+  private final Xlsx parent;
+  
   private final Style style;
   private final String name;
   private final String workDir;
@@ -35,6 +38,9 @@ public class Sheet {
   private final MergeCells mergeCells = new MergeCells();
   
   private int lastColumn;
+  
+  private final List<TwoCellAnchor> drawing = new ArrayList<>();
+  private Integer drawingId;
   
   public PageMargins pageMargins() {
     return pageMargins;
@@ -306,7 +312,9 @@ public class Sheet {
     return style;
   }
   
-  Sheet(Styles styles, int sheetNo, String workDir, SharedStrings strs, boolean selected) {
+  Sheet(Xlsx owner, Styles styles, int sheetNo, String workDir, SharedStrings strs, boolean selected) {
+    
+    parent = owner;
     this.name = "sheet" + sheetNo;
     this.displayName = "Лист" + sheetNo;
     this.workDir = workDir;
@@ -400,6 +408,7 @@ public class Sheet {
     out.println("</sheetData>");
     mergeCells.print(out);
     pageMargins.print(out);
+    printDrawings();
     out.println("</worksheet>");
     out.close();
     out = null;
@@ -439,5 +448,55 @@ public class Sheet {
   
   public void setSummaryRight(boolean summaryRight) {
     this.summaryRight = summaryRight;
+  }
+  
+  public Chart addChart(ChartType type, int col1, int row1, int col2, int row2) {
+    
+    Chart chart = parent.newChart(type);
+    addChart(chart, col1, row1, col2, row2);
+    
+    return chart;
+  }
+  
+  public void addChart(Chart chart, int col1, int row1, int col2, int row2) {
+    
+    setDrawingId();
+    TwoCellAnchor anchor = new TwoCellAnchor(chart, col1, row1, col2, row2);
+    drawing.add(anchor);
+  }
+  
+  private void setDrawingId() {
+    if (drawingId != null) return;
+    drawingId = parent.getDrawingIdNext();
+  }
+  
+  Integer getDrawingId() {
+    return drawingId;
+  }
+  
+  List<TwoCellAnchor> getDrawing() {
+    return drawing;
+  }
+  
+  private void printDrawings() {
+    
+    if (drawingId == null) return;
+    
+    out.println("<drawing r:id=\"rId1\"/>");
+    
+    try {
+      String dir = workDir + "/xl/worksheets/_rels";
+      new File(dir).mkdirs();
+      
+      PrintStream os = new PrintStream(dir + "/sheet" + getDrawingId() + ".xml.rels", "UTF-8");
+      
+      os.println("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
+      os.print("<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\"><Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/drawing\" Target=\"../drawings/drawing");
+      os.print(getDrawingId());
+      os.println(".xml\"/>");
+      os.print("</Relationships>");
+      
+      os.close();
+    } catch (Exception ex) {}
   }
 }
