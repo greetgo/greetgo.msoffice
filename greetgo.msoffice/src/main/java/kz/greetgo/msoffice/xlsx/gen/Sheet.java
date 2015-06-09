@@ -31,7 +31,7 @@ public class Sheet {
   private final Map<Integer, Double> widths = new HashMap<Integer, Double>();
   final boolean selected;
   private boolean started = false;
-  private boolean finished = false;
+  private final boolean finished = false;
   private PrintStream out;
   private final PageMargins pageMargins = new PageMargins();
   private String displayName;
@@ -482,16 +482,18 @@ public class Sheet {
     
     if (drawingId == null) return;
     
-    out.println("<drawing r:id=\"rId1\"/>");
+    out.println("<drawing r:id=\"rId" + getDrawingId() + "\"/>");
     
     try {
       String dir = workDir + "/xl/worksheets/_rels";
       new File(dir).mkdirs();
       
-      PrintStream os = new PrintStream(dir + "/sheet" + getDrawingId() + ".xml.rels", "UTF-8");
+      PrintStream os = new PrintStream(dir + "/" + name + ".xml.rels", "UTF-8");
       
       os.println("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
-      os.print("<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\"><Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/drawing\" Target=\"../drawings/drawing");
+      os.print("<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\"><Relationship Id=\"rId");
+      os.print(getDrawingId());
+      os.print("\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/drawing\" Target=\"../drawings/drawing");
       os.print(getDrawingId());
       os.println(".xml\"/>");
       os.print("</Relationships>");
