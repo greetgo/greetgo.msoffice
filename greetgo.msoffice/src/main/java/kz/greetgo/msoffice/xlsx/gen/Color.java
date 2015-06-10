@@ -95,6 +95,21 @@ public class Color {
     return ret.toString();
   }
   
+  public String strRGB() {
+    StringBuilder ret = new StringBuilder();
+    
+    ret.append(DIGITS[red / 16]);
+    ret.append(DIGITS[red % 16]);
+    
+    ret.append(DIGITS[green / 16]);
+    ret.append(DIGITS[green % 16]);
+    
+    ret.append(DIGITS[blue / 16]);
+    ret.append(DIGITS[blue % 16]);
+    
+    return ret.toString();
+  }
+  
   @Override
   public int hashCode() {
     final int prime = 31;

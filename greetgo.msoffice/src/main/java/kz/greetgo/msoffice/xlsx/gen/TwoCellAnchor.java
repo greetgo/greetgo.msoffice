@@ -50,7 +50,7 @@ class TwoCellAnchor {
     buf.append("</xdr:col><xdr:colOff>0</xdr:colOff><xdr:row>");
     buf.append(row1);
     buf.append("</xdr:row><xdr:rowOff>0</xdr:rowOff></xdr:from><xdr:to><xdr:col>");
-    buf.append(col2);
+    buf.append(col2 + 1);
     buf.append("</xdr:col><xdr:colOff>0</xdr:colOff><xdr:row>");
     buf.append(row2);
     buf.append("</xdr:row><xdr:rowOff>0</xdr:rowOff></xdr:to>");

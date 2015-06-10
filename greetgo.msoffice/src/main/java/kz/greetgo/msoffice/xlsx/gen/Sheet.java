@@ -458,11 +458,21 @@ public class Sheet {
     return chart;
   }
   
+  public Chart addChart(ChartType type, String col1, int row1, String col2, int row2) {
+    return addChart(type, UtilOffice.parseLettersNumber(col1), row1,
+        UtilOffice.parseLettersNumber(col2), row2);
+  }
+  
   public void addChart(Chart chart, int col1, int row1, int col2, int row2) {
     
     setDrawingId();
     TwoCellAnchor anchor = new TwoCellAnchor(chart, col1, row1, col2, row2);
     drawing.add(anchor);
+  }
+  
+  public void addChart(Chart chart, String col1, int row1, String col2, int row2) {
+    addChart(chart, UtilOffice.parseLettersNumber(col1), row1, UtilOffice.parseLettersNumber(col2),
+        row2);
   }
   
   private void setDrawingId() {
