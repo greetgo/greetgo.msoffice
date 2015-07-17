@@ -62,6 +62,25 @@ public class Sheet {
     this.defaultRowHeight = defaultRowHeight;
   }
   
+  public Sheet cellFormula(int col, String formulaValue, NumFmt numFmt) {
+    init();
+    setLastColumn(col);
+    style.numFmt = numFmt;
+    
+    if (formulaValue == null) {
+      int styleIndex = style.index();
+      String pos = UtilOffice.toTablePosition(curRow, col - 1);
+      out.printf("<c r=\"%s\" s=\"%d\" t=\"e\"><f></f></c>", pos, styleIndex);
+      out.println();
+    } else {
+      int styleIndex = style.index();
+      String pos = UtilOffice.toTablePosition(curRow, col - 1);
+      out.printf("<c r=\"%s\" s=\"%d\" t=\"e\"><f>%s</f></c>", pos, styleIndex, formulaValue);
+      out.println();
+    }
+    return this;
+  }
+  
   public Sheet cellFormula(int col, String formulaValue) {
     init();
     setLastColumn(col);
@@ -70,13 +89,12 @@ public class Sheet {
     if (formulaValue == null) {
       int styleIndex = style.index();
       String pos = UtilOffice.toTablePosition(curRow, col - 1);
-      out.printf("<c r=\"%s\" s=\"%d\" t=\"e\"><f></f><v>0.0<v/></c>", pos, styleIndex);
+      out.printf("<c r=\"%s\" s=\"%d\" t=\"e\"><f></f></c>", pos, styleIndex);
       out.println();
     } else {
       int styleIndex = style.index();
       String pos = UtilOffice.toTablePosition(curRow, col - 1);
-      out.printf("<c r=\"%s\" s=\"%d\" t=\"e\"><f>%s</f><v>0.0</v></c>", pos, styleIndex,
-          formulaValue);
+      out.printf("<c r=\"%s\" s=\"%d\" t=\"e\"><f>%s</f></c>", pos, styleIndex, formulaValue);
       out.println();
     }
     return this;
@@ -458,9 +476,42 @@ public class Sheet {
     return chart;
   }
   
+  /**
+   * @param col1
+   *          Столбец первой ячейки
+   * @param row1
+   *          Строка первой ячейки
+   * @param col2
+   *          Столбец последней ячейки
+   * @param row2
+   *          Строка последней ячейки
+   * @param col1off
+   *          Отступ по горизонтали от первой ячейки
+   * @param row1off
+   *          Отступ по вертикали от первой ячейки
+   * @param col2off
+   *          Отступ по горизонтали от последней ячейки
+   * @param row2off
+   *          Отступ по вертикали от последней ячейки
+   */
+  public Chart addChart(ChartType type, int col1, int row1, int col2, int row2, int col1off,
+      int row1off, int col2off, int row2off) {
+    
+    Chart chart = parent.newChart(type);
+    addChart(chart, col1, row1, col2, row2, col1off, row1off, col2off, row2off);
+    
+    return chart;
+  }
+  
   public Chart addChart(ChartType type, String col1, int row1, String col2, int row2) {
     return addChart(type, UtilOffice.parseLettersNumber(col1), row1,
         UtilOffice.parseLettersNumber(col2), row2);
+  }
+  
+  public Chart addChart(ChartType type, String col1, int row1, String col2, int row2, int col1off,
+      int row1off, int col2off, int row2off) {
+    return addChart(type, UtilOffice.parseLettersNumber(col1), row1,
+        UtilOffice.parseLettersNumber(col2), row2, col1off, row1off, col2off, row2off);
   }
   
   public void addChart(Chart chart, int col1, int row1, int col2, int row2) {
@@ -470,9 +521,24 @@ public class Sheet {
     drawing.add(anchor);
   }
   
+  public void addChart(Chart chart, int col1, int row1, int col2, int row2, int col1off,
+      int row1off, int col2off, int row2off) {
+    
+    setDrawingId();
+    TwoCellAnchor anchor = new TwoCellAnchor(chart, col1, row1, col2, row2, col1off, row1off,
+        col2off, row2off);
+    drawing.add(anchor);
+  }
+  
   public void addChart(Chart chart, String col1, int row1, String col2, int row2) {
     addChart(chart, UtilOffice.parseLettersNumber(col1), row1, UtilOffice.parseLettersNumber(col2),
         row2);
+  }
+  
+  public void addChart(Chart chart, String col1, int row1, String col2, int row2, int col1off,
+      int row1off, int col2off, int row2off) {
+    addChart(chart, UtilOffice.parseLettersNumber(col1), row1, UtilOffice.parseLettersNumber(col2),
+        row2, col1off, row1off, col2off, row2off);
   }
   
   private void setDrawingId() {

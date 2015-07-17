@@ -16,6 +16,7 @@ public class Style {
     fill = null;
     alignment.clean();
     borders.clean();
+    clearNumFmt();
   }
   
   public Font font() {
