@@ -284,6 +284,40 @@ public class UtilOffice {
   }
   
   /**
+   * Парсит представление координат ячейки.
+   * 
+   * @param coord
+   *          Строка с координатой: символьное обозначение столбца и номер строки ("B6", "C8",
+   *          "AB12").
+   * 
+   * @return [ col, row ], нумерация с 1
+   */
+  public static int[] parseCellCoord(String coord) {
+    if (coord == null) throw new NullPointerException("Координата не должна быть пустой");
+    coord = coord.trim();
+    if (coord.length() < 1) throw new IllegalArgumentException("Координата не должна быть пустой");
+    
+    int[] coordint = new int[2];
+    
+    coord = coord.toUpperCase();
+    
+    int i = 0;
+    while (i < coord.length()) {
+      if (Character.isDigit(coord.charAt(i))) break;
+      i++;
+    }
+    
+    String col = coord.substring(0, i);
+    String row = "0";
+    if (i < coord.length()) row = coord.substring(i);
+    
+    coordint[0] = parseLettersNumber(col) + 1;
+    coordint[1] = Integer.parseInt(row);
+    
+    return coordint;
+  }
+  
+  /**
    * <p>
    * Формирует копию InputStream
    * </p>

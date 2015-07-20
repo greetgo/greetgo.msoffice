@@ -96,7 +96,7 @@ public class GenXlsxGraphProbe {
     sh2.cellStr(2, "График");
     sh2.row().finish();
     
-    chart = sh2.addChart(ChartType.CIRCLE_DIAGRAM, 2, 2, 10, 10);
+    chart = sh2.addChart(ChartType.CIRCLE_DIAGRAM, "B2", "J10");
     chart.setData("Лист1!$C$2:$C$5");
     chart.setDataTitles("Лист1!$B$2:$B$5");
     chart.setAlignmentLegend(Align.right);

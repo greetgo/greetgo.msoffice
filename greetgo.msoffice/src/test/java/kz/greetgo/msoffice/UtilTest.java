@@ -46,4 +46,28 @@ public class UtilTest {
     Assert.assertTrue(message + ": expected = " + expected + ", actual = " + actual + ", delta = "
         + delta + ", but eps = " + eps, delta <= eps);
   }
+  
+  @Test
+  void cellCoord() {
+    Assert.assertEquals(11, UtilOffice.parseLettersNumber("L"));
+    Assert.assertEquals(26, UtilOffice.parseLettersNumber("AA"));
+    
+    Assert.assertEquals(1, UtilOffice.parseCellCoord("A1")[0]);
+    Assert.assertEquals(1, UtilOffice.parseCellCoord("A1")[1]);
+    
+    Assert.assertEquals(1, UtilOffice.parseCellCoord("A2")[0]);
+    Assert.assertEquals(2, UtilOffice.parseCellCoord("A2")[1]);
+    
+    Assert.assertEquals(2, UtilOffice.parseCellCoord("B1")[0]);
+    Assert.assertEquals(1, UtilOffice.parseCellCoord("B1")[1]);
+    
+    Assert.assertEquals(2, UtilOffice.parseCellCoord("B2")[0]);
+    Assert.assertEquals(2, UtilOffice.parseCellCoord("B2")[1]);
+    
+    Assert.assertEquals(12, UtilOffice.parseCellCoord("L18")[0]);
+    Assert.assertEquals(18, UtilOffice.parseCellCoord("L18")[1]);
+    
+    Assert.assertEquals(27, UtilOffice.parseCellCoord("AA200")[0]);
+    Assert.assertEquals(200, UtilOffice.parseCellCoord("AA200")[1]);
+  }
 }

@@ -476,6 +476,15 @@ public class Sheet {
     return chart;
   }
   
+  public Chart addChart(ChartType type, String cellFrom, String cellTo) {
+    
+    Chart chart = parent.newChart(type);
+    addChart(chart, new SheetCoord(cellFrom), new SheetCoord(cellTo));
+    
+    return chart;
+  }
+  
+  @Deprecated
   public Chart addChart(ChartType type, int colFrom, int rowFrom, int colTo, int rowTo) {
     
     Chart chart = parent.newChart(type);
@@ -484,6 +493,7 @@ public class Sheet {
     return chart;
   }
   
+  @Deprecated
   public Chart addChart(ChartType type, String colFrom, int rowFrom, String colTo, int rowTo) {
     return addChart(type, new SheetCoord(colFrom, rowFrom), new SheetCoord(colTo, rowTo));
   }
@@ -495,6 +505,15 @@ public class Sheet {
     drawing.add(anchor);
   }
   
+  public void addChart(Chart chart, String cellFrom, String cellTo) {
+    
+    setDrawingId();
+    TwoCellAnchor anchor = new TwoCellAnchor(chart, new SheetCoord(cellFrom),
+        new SheetCoord(cellTo));
+    drawing.add(anchor);
+  }
+  
+  @Deprecated
   public void addChart(Chart chart, int colFrom, int rowFrom, int colTo, int rowTo) {
     
     setDrawingId();
@@ -503,6 +522,7 @@ public class Sheet {
     drawing.add(anchor);
   }
   
+  @Deprecated
   public void addChart(Chart chart, String colFrom, int rowFrom, String colTo, int rowTo) {
     addChart(chart, new SheetCoord(colFrom, rowFrom), new SheetCoord(colTo, rowTo));
   }

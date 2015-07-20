@@ -9,14 +9,14 @@ import java.io.PrintStream;
 class TwoCellAnchor {
   
   // верхний левый угол
-  private final int col1; // колонка
-  private final int row1; // строка
+  private final int col1; // колонка, нумерация с 1
+  private final int row1; // строка, нумерация с 1
   private final int col1off; // отступ от начала колонки
   private final int row1off; // отступ от начала строки
   
   // правый нижний угол
-  private final int col2; // колонка
-  private final int row2; // строка
+  private final int col2; // колонка, нумерация с 1
+  private final int row2; // строка, нумерация с 1
   private final int col2off; // отступ от начала колонки
   private final int row2off; // отступ от начала строки
   
@@ -46,15 +46,15 @@ class TwoCellAnchor {
     StringBuffer buf = new StringBuffer();
     
     buf.append("<xdr:twoCellAnchor><xdr:from><xdr:col>");
-    buf.append(col1);
+    buf.append(col1 - 1);
     buf.append("</xdr:col><xdr:colOff>");
     buf.append(col1off);
     buf.append("</xdr:colOff><xdr:row>");
-    buf.append(row1);
+    buf.append(row1 - 1);
     buf.append("</xdr:row><xdr:rowOff>");
     buf.append(row1off);
     buf.append("</xdr:rowOff></xdr:from><xdr:to><xdr:col>");
-    buf.append(col2 + 1);
+    buf.append(col2);
     buf.append("</xdr:col><xdr:colOff>");
     buf.append(col2off);
     buf.append("</xdr:colOff><xdr:row>");
