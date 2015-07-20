@@ -7,13 +7,13 @@ import kz.greetgo.msoffice.UtilOffice;
  */
 public class SheetCoord {
   
-  /** col Столбец первой ячейки */
+  /** Столбец ячейки */
   public int col;
-  /** row Строка первой ячейки */
+  /** Строка ячейки */
   public int row;
-  /** coloff Отступ по горизонтали от первой ячейки */
+  /** Отступ по горизонтали от ячейки */
   public int coloff;
-  /** rowoff Отступ по вертикали от первой ячейки */
+  /** Отступ по вертикали от ячейки */
   public int rowoff;
   
   public SheetCoord(int col, int row) {
