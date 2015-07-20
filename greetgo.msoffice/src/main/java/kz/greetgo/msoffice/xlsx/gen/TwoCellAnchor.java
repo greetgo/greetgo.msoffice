@@ -11,36 +11,30 @@ class TwoCellAnchor {
   // верхний левый угол
   private final int col1; // колонка
   private final int row1; // строка
-  private int col1off; // отступ от начала колонки
-  private int row1off; // отступ от начала строки
+  private final int col1off; // отступ от начала колонки
+  private final int row1off; // отступ от начала строки
   
   // правый нижний угол
   private final int col2; // колонка
   private final int row2; // строка
-  private int col2off; // отступ от начала колонки
-  private int row2off; // отступ от начала строки
+  private final int col2off; // отступ от начала колонки
+  private final int row2off; // отступ от начала строки
   
   private final Chart chart; // график
   
-  public TwoCellAnchor(Chart chart, int columnFrom, int rowFrom, int columnTo, int rowTo) {
+  public TwoCellAnchor(Chart chart, SheetCoord coordFrom, SheetCoord coordTo) {
     
     this.chart = chart;
     
-    col1 = columnFrom;
-    row1 = rowFrom;
-    col2 = columnTo;
-    row2 = rowTo;
-  }
-  
-  public TwoCellAnchor(Chart chart, int columnFrom, int rowFrom, int columnTo, int rowTo,
-      int columnFromOff, int rowFromOff, int columnToOff, int rowToOff) {
+    col1 = coordFrom.col;
+    col1off = coordFrom.coloff;
+    row1 = coordFrom.row;
+    row1off = coordFrom.rowoff;
     
-    this(chart, columnFrom, rowFrom, columnTo, rowTo);
-    
-    col1off = columnFromOff;
-    row1off = rowFromOff;
-    col2off = columnToOff;
-    row2off = rowToOff;
+    col2 = coordTo.col;
+    col2off = coordTo.coloff;
+    row2 = coordTo.row;
+    row2off = coordTo.rowoff;
   }
   
   int getChartId() {

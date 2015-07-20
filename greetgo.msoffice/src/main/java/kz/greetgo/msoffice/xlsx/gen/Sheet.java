@@ -468,77 +468,43 @@ public class Sheet {
     this.summaryRight = summaryRight;
   }
   
-  public Chart addChart(ChartType type, int col1, int row1, int col2, int row2) {
+  public Chart addChart(ChartType type, SheetCoord coordFrom, SheetCoord coordTo) {
     
     Chart chart = parent.newChart(type);
-    addChart(chart, col1, row1, col2, row2);
+    addChart(chart, coordFrom, coordTo);
     
     return chart;
   }
   
-  /**
-   * @param col1
-   *          Столбец первой ячейки
-   * @param row1
-   *          Строка первой ячейки
-   * @param col2
-   *          Столбец последней ячейки
-   * @param row2
-   *          Строка последней ячейки
-   * @param col1off
-   *          Отступ по горизонтали от первой ячейки
-   * @param row1off
-   *          Отступ по вертикали от первой ячейки
-   * @param col2off
-   *          Отступ по горизонтали от последней ячейки
-   * @param row2off
-   *          Отступ по вертикали от последней ячейки
-   */
-  public Chart addChart(ChartType type, int col1, int row1, int col2, int row2, int col1off,
-      int row1off, int col2off, int row2off) {
+  public Chart addChart(ChartType type, int colFrom, int rowFrom, int colTo, int rowTo) {
     
     Chart chart = parent.newChart(type);
-    addChart(chart, col1, row1, col2, row2, col1off, row1off, col2off, row2off);
+    addChart(chart, new SheetCoord(colFrom, rowFrom), new SheetCoord(colTo, rowTo));
     
     return chart;
   }
   
-  public Chart addChart(ChartType type, String col1, int row1, String col2, int row2) {
-    return addChart(type, UtilOffice.parseLettersNumber(col1), row1,
-        UtilOffice.parseLettersNumber(col2), row2);
+  public Chart addChart(ChartType type, String colFrom, int rowFrom, String colTo, int rowTo) {
+    return addChart(type, new SheetCoord(colFrom, rowFrom), new SheetCoord(colTo, rowTo));
   }
   
-  public Chart addChart(ChartType type, String col1, int row1, String col2, int row2, int col1off,
-      int row1off, int col2off, int row2off) {
-    return addChart(type, UtilOffice.parseLettersNumber(col1), row1,
-        UtilOffice.parseLettersNumber(col2), row2, col1off, row1off, col2off, row2off);
-  }
-  
-  public void addChart(Chart chart, int col1, int row1, int col2, int row2) {
+  public void addChart(Chart chart, SheetCoord coordFrom, SheetCoord coordTo) {
     
     setDrawingId();
-    TwoCellAnchor anchor = new TwoCellAnchor(chart, col1, row1, col2, row2);
+    TwoCellAnchor anchor = new TwoCellAnchor(chart, coordFrom, coordTo);
     drawing.add(anchor);
   }
   
-  public void addChart(Chart chart, int col1, int row1, int col2, int row2, int col1off,
-      int row1off, int col2off, int row2off) {
+  public void addChart(Chart chart, int colFrom, int rowFrom, int colTo, int rowTo) {
     
     setDrawingId();
-    TwoCellAnchor anchor = new TwoCellAnchor(chart, col1, row1, col2, row2, col1off, row1off,
-        col2off, row2off);
+    TwoCellAnchor anchor = new TwoCellAnchor(chart, new SheetCoord(colFrom, rowFrom),
+        new SheetCoord(colTo, rowTo));
     drawing.add(anchor);
   }
   
-  public void addChart(Chart chart, String col1, int row1, String col2, int row2) {
-    addChart(chart, UtilOffice.parseLettersNumber(col1), row1, UtilOffice.parseLettersNumber(col2),
-        row2);
-  }
-  
-  public void addChart(Chart chart, String col1, int row1, String col2, int row2, int col1off,
-      int row1off, int col2off, int row2off) {
-    addChart(chart, UtilOffice.parseLettersNumber(col1), row1, UtilOffice.parseLettersNumber(col2),
-        row2, col1off, row1off, col2off, row2off);
+  public void addChart(Chart chart, String colFrom, int rowFrom, String colTo, int rowTo) {
+    addChart(chart, new SheetCoord(colFrom, rowFrom), new SheetCoord(colTo, rowTo));
   }
   
   private void setDrawingId() {

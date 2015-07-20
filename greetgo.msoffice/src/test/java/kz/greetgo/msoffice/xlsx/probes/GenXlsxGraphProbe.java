@@ -8,6 +8,7 @@ import kz.greetgo.msoffice.xlsx.gen.ChartType;
 import kz.greetgo.msoffice.xlsx.gen.Color;
 import kz.greetgo.msoffice.xlsx.gen.NumFmt;
 import kz.greetgo.msoffice.xlsx.gen.Sheet;
+import kz.greetgo.msoffice.xlsx.gen.SheetCoord;
 import kz.greetgo.msoffice.xlsx.gen.Xlsx;
 
 public class GenXlsxGraphProbe {
@@ -67,7 +68,8 @@ public class GenXlsxGraphProbe {
     
     // графики
     
-    Chart chart = sh.addChart(ChartType.CIRCLE_DIAGRAM, "F", 2, "K", 10, 200000, 100000, 0, 0);
+    Chart chart = sh.addChart(ChartType.CIRCLE_DIAGRAM, new SheetCoord("F", 2, 200000, 100000),
+        new SheetCoord("K", 10, 0, 0));
     chart.setTitle("Годовой баланс");
     chart.setData("Лист1!$C$2:$C$5");
     chart.setDataTitles("Лист1!$B$2:$B$5");
