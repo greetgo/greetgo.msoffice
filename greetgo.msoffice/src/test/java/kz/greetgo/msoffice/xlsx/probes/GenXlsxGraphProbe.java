@@ -75,7 +75,7 @@ public class GenXlsxGraphProbe {
     chart.setDataTitles("Лист1!$B$2:$B$5");
     chart.setExplosion(10);
     
-    chart = sh.addChart(ChartType.LINE_CHART, 5, 12, 10, 20);
+    chart = sh.addChart(ChartType.LINE_CHART, new SheetCoord("E12"), new SheetCoord("J20"));
     chart.setTitle("График");
     
     chart.setData(sh, "C", 2, 6);
