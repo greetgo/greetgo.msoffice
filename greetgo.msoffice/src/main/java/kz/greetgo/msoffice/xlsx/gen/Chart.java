@@ -327,7 +327,7 @@ public class Chart {
   
   private void appendSer(StringBuffer buf, String data, String titles, Color cink, int wline) {
     
-    buf.append("<c:ser><c:explosion val=\"");
+    buf.append("<c:ser><c:idx val=\"0\"/><c:explosion val=\"");
     buf.append(expl);
     buf.append("\"/>");
     
