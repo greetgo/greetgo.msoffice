@@ -5,7 +5,7 @@ apply plugin: 'maven'
 group = 'kz.greetgo'
 
 sourceCompatibility = 1.7
-version = '0.4.8'
+version = '0.4.9'
 
 
 def nowDate = new Date()
