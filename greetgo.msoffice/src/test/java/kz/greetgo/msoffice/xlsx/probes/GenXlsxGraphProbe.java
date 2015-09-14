@@ -7,6 +7,7 @@ import kz.greetgo.msoffice.xlsx.gen.Align;
 import kz.greetgo.msoffice.xlsx.gen.Chart;
 import kz.greetgo.msoffice.xlsx.gen.ChartType;
 import kz.greetgo.msoffice.xlsx.gen.Color;
+import kz.greetgo.msoffice.xlsx.gen.FontName;
 import kz.greetgo.msoffice.xlsx.gen.NumFmt;
 import kz.greetgo.msoffice.xlsx.gen.Sheet;
 import kz.greetgo.msoffice.xlsx.gen.SheetCoord;
@@ -27,6 +28,8 @@ public class GenXlsxGraphProbe {
     // данные для графика
     
     sh.skipRow();
+    
+    sh.style().font().setName(FontName.Arial);
     
     sh.row().start();
     sh.cellStr(2, "Oracle");

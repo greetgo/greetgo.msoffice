@@ -1,7 +1,10 @@
 package kz.greetgo.msoffice.xlsx.gen;
 
 public enum FontName {
-  Calibri("2", "204", "minor"), Times_New_Roman("1", "204", null);
+  
+  Calibri("2", "204", "minor"), //
+  Times_New_Roman("1", "204", null), //
+  Arial("2", "204", null);
   
   private final String family;
   private final String charset;
