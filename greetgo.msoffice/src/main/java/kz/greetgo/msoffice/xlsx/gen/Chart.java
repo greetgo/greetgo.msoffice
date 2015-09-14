@@ -5,7 +5,8 @@ import java.io.PrintStream;
 public class Chart {
   
   private final ChartType type;
-  private final int id;
+  private final int fileid;
+  private final int relid;
   
   private String title = "";
   private String data;
@@ -22,10 +23,11 @@ public class Chart {
   private Color cink2 = Color.black();
   private Color cpaper = Color.white();
   
-  Chart(ChartType type, int id) {
+  Chart(ChartType type, int fileid, int relid) {
     
     this.type = type;
-    this.id = id;
+    this.fileid = fileid;
+    this.relid = relid;
   }
   
   /** Название диаграммы. */
@@ -266,8 +268,12 @@ public class Chart {
     return buf.toString();
   }
   
-  int getId() {
-    return id;
+  int getRelId() {
+    return relid;
+  }
+  
+  int getFileId() {
+    return fileid;
   }
   
   void print(PrintStream os) {

@@ -55,6 +55,10 @@ public class Content {
     out.println("<Default Extension=\"rels\" "
         + "ContentType=\"application/vnd.openxmlformats-package.relationships+xml\" />");
     out.println("<Default Extension=\"xml\" " + "ContentType=\"application/xml\" />");
+    
+    for (String ext : xlsx.imageexts)
+      out.println("<Default Extension=\"" + ext + "\" " + "ContentType=\"image/" + ext + "\"/>");
+    
     out.println("<Override PartName=\"/xl/workbook.xml\" "
         + "ContentType=\"application/vnd.openxmlformats-officedocument"
         + ".spreadsheetml.sheet.main+xml\" />");
@@ -64,7 +68,7 @@ public class Content {
     
     for (Chart chart : xlsx.getCharts()) {
       out.print("<Override PartName=\"/xl/charts/chart");
-      out.print(chart.getId());
+      out.print(chart.getFileId());
       out.println(".xml\" ContentType=\"application/vnd.openxmlformats-officedocument.drawingml.chart+xml\"/>");
     }
     
@@ -261,7 +265,7 @@ public class Content {
     new File(dir).mkdirs();
     
     for (Chart chart : xlsx.getCharts()) {
-      PrintStream os = new PrintStream(dir + "/chart" + chart.getId() + ".xml", "UTF-8");
+      PrintStream os = new PrintStream(dir + "/chart" + chart.getFileId() + ".xml", "UTF-8");
       chart.print(os);
       os.close();
     }
@@ -288,11 +292,10 @@ public class Content {
         anch.print(os);
         
         osrel.print("<Relationship Id=\"rId");
-        osrel.print(anch.getChartId());
-        osrel
-            .print("\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/chart\" Target=\"../charts/chart");
-        osrel.print(anch.getChartId());
-        osrel.println(".xml\"/>");
+        osrel.print(anch.getRelId());
+        osrel.print("\" Type=\"");
+        osrel.print(anch.getType());
+        osrel.print("\"/>");
       }
       
       os.print("</xdr:wsDr>");

@@ -3,7 +3,7 @@ package kz.greetgo.msoffice.xlsx.gen;
 import kz.greetgo.msoffice.UtilOffice;
 
 /**
- * Координаты на листе. Используются в графиках.
+ * Координаты на листе. Используются в графиках и для изображений.
  */
 public class SheetCoord {
   

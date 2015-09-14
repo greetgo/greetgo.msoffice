@@ -1,5 +1,6 @@
 package kz.greetgo.msoffice.xlsx.probes;
 
+import java.io.File;
 import java.io.FileOutputStream;
 
 import kz.greetgo.msoffice.xlsx.gen.Align;
@@ -101,6 +102,12 @@ public class GenXlsxGraphProbe {
     chart.setDataTitles("Лист1!$B$2:$B$5");
     chart.setAlignmentLegend(Align.right);
     chart.setRotation(60);
+    
+    sh.addImage(new File("/home/aboldyrev/1.png"), "png", new SheetCoord("b23"), new SheetCoord(
+        "h38"));
+    
+    sh2.addImage(new File("/home/aboldyrev/2.png"), "png", new SheetCoord("d14"), new SheetCoord(
+        "g20"));
     
     // запись
     

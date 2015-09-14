@@ -14,7 +14,7 @@ import kz.greetgo.msoffice.UtilOffice;
 import kz.greetgo.msoffice.xlsx.parse.SharedStrings;
 
 public class Xlsx {
-  private String tmpDirBase = System.getProperty("java.io.tmpdir", ".");
+  private final String tmpDirBase = System.getProperty("java.io.tmpdir", ".");
   
   private String workDir = null;
   private SharedStrings strs = null;
@@ -27,8 +27,10 @@ public class Xlsx {
   private boolean wasSelected = false;
   
   private final Set<Chart> charts = new HashSet<Chart>();
+  private int chartFileIdLast = 0;
+  private int imageFileIdLast = 0;
   private int drawingIdLast = 0;
-  private int chartIdLast = 0;
+  final Set<String> imageexts = new HashSet<>();
   
   public Xlsx() {
     
@@ -132,12 +134,16 @@ public class Xlsx {
     close();
   }
   
-  public Chart newChart(ChartType type) {
+  public Chart newChart(ChartType type, int relid) {
     
-    Chart chart = new Chart(type, ++chartIdLast);
+    Chart chart = new Chart(type, ++chartFileIdLast, relid);
     charts.add(chart);
     
     return chart;
+  }
+  
+  public int newImageFileId() {
+    return ++imageFileIdLast;
   }
   
   public void add(Chart chart) {

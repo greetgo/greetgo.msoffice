@@ -1,8 +1,13 @@
 package kz.greetgo.msoffice.xlsx.gen;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.io.PrintStream;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -40,7 +45,8 @@ public class Sheet {
   private int lastColumn;
   
   private final List<TwoCellAnchor> drawing = new ArrayList<>();
-  private Integer drawingId;
+  private Integer drawingFileId;
+  private int drawingRelIdLast = 0;
   
   public PageMargins pageMargins() {
     return pageMargins;
@@ -470,7 +476,7 @@ public class Sheet {
   
   public Chart addChart(ChartType type, SheetCoord coordFrom, SheetCoord coordTo) {
     
-    Chart chart = parent.newChart(type);
+    Chart chart = parent.newChart(type, ++drawingRelIdLast);
     addChart(chart, coordFrom, coordTo);
     
     return chart;
@@ -478,7 +484,7 @@ public class Sheet {
   
   public Chart addChart(ChartType type, String cellFrom, String cellTo) {
     
-    Chart chart = parent.newChart(type);
+    Chart chart = parent.newChart(type, ++drawingRelIdLast);
     addChart(chart, new SheetCoord(cellFrom), new SheetCoord(cellTo));
     
     return chart;
@@ -487,7 +493,7 @@ public class Sheet {
   @Deprecated
   public Chart addChart(ChartType type, int colFrom, int rowFrom, int colTo, int rowTo) {
     
-    Chart chart = parent.newChart(type);
+    Chart chart = parent.newChart(type, ++drawingRelIdLast);
     addChart(chart, new SheetCoord(colFrom, rowFrom), new SheetCoord(colTo, rowTo));
     
     return chart;
@@ -501,15 +507,15 @@ public class Sheet {
   public void addChart(Chart chart, SheetCoord coordFrom, SheetCoord coordTo) {
     
     setDrawingId();
-    TwoCellAnchor anchor = new TwoCellAnchor(chart, coordFrom, coordTo);
+    TwoCellAnchor anchor = new TwoCellAnchorChart(chart, coordFrom, coordTo);
     drawing.add(anchor);
   }
   
   public void addChart(Chart chart, String cellFrom, String cellTo) {
     
     setDrawingId();
-    TwoCellAnchor anchor = new TwoCellAnchor(chart, new SheetCoord(cellFrom),
-        new SheetCoord(cellTo));
+    TwoCellAnchor anchor = new TwoCellAnchorChart(chart, new SheetCoord(cellFrom), new SheetCoord(
+        cellTo));
     drawing.add(anchor);
   }
   
@@ -517,7 +523,7 @@ public class Sheet {
   public void addChart(Chart chart, int colFrom, int rowFrom, int colTo, int rowTo) {
     
     setDrawingId();
-    TwoCellAnchor anchor = new TwoCellAnchor(chart, new SheetCoord(colFrom, rowFrom),
+    TwoCellAnchor anchor = new TwoCellAnchorChart(chart, new SheetCoord(colFrom, rowFrom),
         new SheetCoord(colTo, rowTo));
     drawing.add(anchor);
   }
@@ -527,13 +533,62 @@ public class Sheet {
     addChart(chart, new SheetCoord(colFrom, rowFrom), new SheetCoord(colTo, rowTo));
   }
   
+  public void addImage(byte[] img, String fileext, SheetCoord coordFrom, SheetCoord coordTo) {
+    
+    if (img == null) throw new IllegalArgumentException("Не задано изображение");
+    if (img.length == 0) throw new IllegalArgumentException("Задано пустое изображение");
+    
+    InputStream is = new ByteArrayInputStream(img);
+    
+    addImage(is, fileext, coordFrom, coordTo);
+  }
+  
+  public void addImage(File file, String fileext, SheetCoord coordFrom, SheetCoord coordTo) {
+    
+    if (file == null) throw new IllegalArgumentException("Не задан файл с изображением");
+    if (!file.exists()) throw new IllegalArgumentException(
+        "Указанный файл с изображением не существует");
+    
+    InputStream is = null;
+    try {
+      is = new FileInputStream(file);
+    } catch (FileNotFoundException ex) {
+      throw new IllegalArgumentException("Указанный файл с изображением не найден", ex);
+    }
+    
+    addImage(is, fileext, coordFrom, coordTo);
+  }
+  
+  public void addImage(InputStream is, String fileext, SheetCoord coordFrom, SheetCoord coordTo) {
+    
+    if (is == null) throw new IllegalArgumentException("Не задан поток с изображением");
+    
+    int fileid = parent.newImageFileId();
+    String filename = "image" + fileid + "." + fileext;
+    
+    try {
+      String dir = workDir + "/xl/media";
+      new File(dir).mkdirs();
+      
+      File os = new File(dir + "/" + filename);
+      Files.copy(is, os.toPath());
+      
+      is.close();
+    } catch (Exception ex) {}
+    
+    setDrawingId();
+    TwoCellAnchor anchor = new TwoCellAnchorImage(++drawingRelIdLast, filename, coordFrom, coordTo);
+    drawing.add(anchor);
+    parent.imageexts.add(fileext);
+  }
+  
   private void setDrawingId() {
-    if (drawingId != null) return;
-    drawingId = parent.getDrawingIdNext();
+    if (drawingFileId != null) return;
+    drawingFileId = parent.getDrawingIdNext();
   }
   
   Integer getDrawingId() {
-    return drawingId;
+    return drawingFileId;
   }
   
   List<TwoCellAnchor> getDrawing() {
@@ -542,7 +597,7 @@ public class Sheet {
   
   private void printDrawings() {
     
-    if (drawingId == null) return;
+    if (drawingFileId == null) return;
     
     out.println("<drawing r:id=\"rId" + getDrawingId() + "\"/>");
     
