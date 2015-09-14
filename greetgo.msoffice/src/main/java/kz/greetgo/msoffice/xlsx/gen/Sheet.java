@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import kz.greetgo.msoffice.ImageType;
 import kz.greetgo.msoffice.UtilOffice;
 import kz.greetgo.msoffice.xlsx.parse.SharedStrings;
 
@@ -533,21 +534,26 @@ public class Sheet {
     addChart(chart, new SheetCoord(colFrom, rowFrom), new SheetCoord(colTo, rowTo));
   }
   
-  public void addImage(byte[] img, String fileext, SheetCoord coordFrom, SheetCoord coordTo) {
+  public void addImage(byte[] img, ImageType type, SheetCoord coordFrom, SheetCoord coordTo) {
     
     if (img == null) throw new IllegalArgumentException("Не задано изображение");
     if (img.length == 0) throw new IllegalArgumentException("Задано пустое изображение");
+    if (type == null) throw new IllegalArgumentException("Не задан тип изображения");
     
     InputStream is = new ByteArrayInputStream(img);
     
-    addImage(is, fileext, coordFrom, coordTo);
+    addImage(is, type, coordFrom, coordTo);
   }
   
-  public void addImage(File file, String fileext, SheetCoord coordFrom, SheetCoord coordTo) {
+  public void addImage(File file, SheetCoord coordFrom, SheetCoord coordTo) {
     
     if (file == null) throw new IllegalArgumentException("Не задан файл с изображением");
     if (!file.exists()) throw new IllegalArgumentException(
         "Указанный файл с изображением не существует");
+    
+    ImageType type = ImageType.getByExt(file.getName().substring(
+        file.getName().lastIndexOf(".") + 1));
+    if (type == null) throw new IllegalArgumentException("Неизвестный тип изображения");
     
     InputStream is = null;
     try {
@@ -556,15 +562,16 @@ public class Sheet {
       throw new IllegalArgumentException("Указанный файл с изображением не найден", ex);
     }
     
-    addImage(is, fileext, coordFrom, coordTo);
+    addImage(is, type, coordFrom, coordTo);
   }
   
-  public void addImage(InputStream is, String fileext, SheetCoord coordFrom, SheetCoord coordTo) {
+  public void addImage(InputStream is, ImageType type, SheetCoord coordFrom, SheetCoord coordTo) {
     
     if (is == null) throw new IllegalArgumentException("Не задан поток с изображением");
+    if (type == null) throw new IllegalArgumentException("Не задан тип изображения");
     
     int fileid = parent.newImageFileId();
-    String filename = "image" + fileid + "." + fileext;
+    String filename = "image" + fileid + "." + type.getExt();
     
     try {
       String dir = workDir + "/xl/media";
@@ -579,7 +586,7 @@ public class Sheet {
     setDrawingId();
     TwoCellAnchor anchor = new TwoCellAnchorImage(++drawingRelIdLast, filename, coordFrom, coordTo);
     drawing.add(anchor);
-    parent.imageexts.add(fileext);
+    parent.imageexts.add(type.getExt());
   }
   
   private void setDrawingId() {

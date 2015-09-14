@@ -106,11 +106,9 @@ public class GenXlsxGraphProbe {
     chart.setAlignmentLegend(Align.right);
     chart.setRotation(60);
     
-    sh.addImage(new File("/home/aboldyrev/1.png"), "png", new SheetCoord("b23"), new SheetCoord(
-        "h38"));
+    sh.addImage(new File("/home/aboldyrev/1.png"), new SheetCoord("b23"), new SheetCoord("h38"));
     
-    sh2.addImage(new File("/home/aboldyrev/2.png"), "png", new SheetCoord("d14"), new SheetCoord(
-        "g20"));
+    sh2.addImage(new File("/home/aboldyrev/2.png"), new SheetCoord("d14"), new SheetCoord("g20"));
     
     // запись
     
