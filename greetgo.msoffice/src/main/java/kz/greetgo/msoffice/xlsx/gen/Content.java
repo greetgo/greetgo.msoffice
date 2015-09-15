@@ -34,6 +34,7 @@ public class Content {
     printContentTypes();
     printWorkbook();
     printThemes();
+    printDrawings();
     printCharts();
     printXl_rels();
     print_rels();
@@ -269,14 +270,17 @@ public class Content {
       chart.print(os);
       os.close();
     }
-    
-    dir = workDir + "/xl/drawings";
-    new File(dir).mkdirs();
-    String dirrel = workDir + "/xl/drawings/_rels";
-    new File(dirrel).mkdirs();
+  }
+  
+  private void printDrawings() throws Exception {
     
     for (Sheet sheet : sheets) {
       if (sheet.getDrawing().size() < 1) continue;
+      
+      String dir = workDir + "/xl/drawings";
+      new File(dir).mkdirs();
+      String dirrel = workDir + "/xl/drawings/_rels";
+      new File(dirrel).mkdirs();
       
       PrintStream os = new PrintStream(dir + "/drawing" + sheet.getDrawingId() + ".xml", "UTF-8");
       os.println("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
