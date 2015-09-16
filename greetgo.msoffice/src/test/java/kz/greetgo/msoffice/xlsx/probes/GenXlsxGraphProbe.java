@@ -63,6 +63,15 @@ public class GenXlsxGraphProbe {
     sh.cellStr(2, "DB2");
     sh.cellInt(3, 700);
     sh.cellInt(4, 750);
+    
+    sh.style().font().setName(FontName.Times_New_Roman);
+    sh.cellStr(15, "\u2713");
+    sh.cellStr(16, "\u2714");
+    
+    sh.style().font().setName(FontName.Arial_Unicode_MS);
+    sh.cellStr(17, "\u2713");
+    sh.cellStr(18, "\u2714");
+    
     sh.row().finish();
     
     sh.row().start();

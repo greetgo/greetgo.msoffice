@@ -4,7 +4,8 @@ public enum FontName {
   
   Calibri("2", "204", "minor"), //
   Times_New_Roman("1", "204", null), //
-  Arial("2", "204", null);
+  Arial("2", "204", null), //
+  Arial_Unicode_MS("2", "204", null);
   
   private final String family;
   private final String charset;
