@@ -9,6 +9,7 @@ import kz.greetgo.msoffice.xlsx.gen.ChartType;
 import kz.greetgo.msoffice.xlsx.gen.Color;
 import kz.greetgo.msoffice.xlsx.gen.FontName;
 import kz.greetgo.msoffice.xlsx.gen.NumFmt;
+import kz.greetgo.msoffice.xlsx.gen.PageSetup.Orientation;
 import kz.greetgo.msoffice.xlsx.gen.Sheet;
 import kz.greetgo.msoffice.xlsx.gen.SheetCoord;
 import kz.greetgo.msoffice.xlsx.gen.Xlsx;
@@ -20,6 +21,9 @@ public class GenXlsxGraphProbe {
     Xlsx excel = new Xlsx();
     
     Sheet sh = excel.newSheet(true);
+    
+    sh.setPageOrientation(Orientation.LANDSCAPE);
+    sh.setScaleByWidth();
     
     sh.setWidth(1, 10);
     sh.setWidth(2, 6);
@@ -73,6 +77,13 @@ public class GenXlsxGraphProbe {
     sh.cellStr(18, "\u2714");
     
     sh.row().finish();
+    
+    sh.row().start();
+    sh.cellDouble(3, 7500.123, NumFmt.NUM_SPACE2);
+    sh.cellDouble(4, 7500.123, NumFmt.NUM_SIMPLE2);
+    sh.row().finish();
+    
+    sh.skipRows(40);
     
     sh.row().start();
     sh.cellDouble(3, 7500.123, NumFmt.NUM_SPACE2);
