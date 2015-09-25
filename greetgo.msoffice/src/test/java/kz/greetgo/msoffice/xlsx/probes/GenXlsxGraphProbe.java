@@ -10,6 +10,7 @@ import kz.greetgo.msoffice.xlsx.gen.Color;
 import kz.greetgo.msoffice.xlsx.gen.FontName;
 import kz.greetgo.msoffice.xlsx.gen.NumFmt;
 import kz.greetgo.msoffice.xlsx.gen.PageSetup.Orientation;
+import kz.greetgo.msoffice.xlsx.gen.PageSetup.PaperSize;
 import kz.greetgo.msoffice.xlsx.gen.Sheet;
 import kz.greetgo.msoffice.xlsx.gen.SheetCoord;
 import kz.greetgo.msoffice.xlsx.gen.Xlsx;
@@ -23,6 +24,7 @@ public class GenXlsxGraphProbe {
     Sheet sh = excel.newSheet(true);
     
     sh.setPageOrientation(Orientation.LANDSCAPE);
+    sh.setPageSize(PaperSize.A4);
     sh.setScaleByWidth();
     
     sh.setWidth(1, 10);

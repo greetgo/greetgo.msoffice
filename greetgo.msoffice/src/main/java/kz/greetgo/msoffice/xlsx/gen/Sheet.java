@@ -66,6 +66,13 @@ public class Sheet {
   }
   
   /**
+   * Фомат бумаги: A4, A5, Letter, etc
+   */
+  public void setPageSize(PageSetup.PaperSize paperSize) {
+    pageSetup.setPaperSize(paperSize);
+  }
+  
+  /**
    * При печати подгонять масштаб под ширину страницы
    */
   public void setScaleByWidth() {

@@ -7,10 +7,28 @@ public class PageSetup {
   private Integer fitToWidth;
   private Integer fitToHeight;
   private Orientation orientation = Orientation.PORTRAIT;
+  private PaperSize paperSize;
   
   public static enum Orientation {
     PORTRAIT, //
     LANDSCAPE;
+  }
+  
+  public static enum PaperSize {
+    
+    A4(9), //
+    A5(11), //
+    A6(70), //
+    Legal(5), //
+    Executive(7), //
+    B5_JIS(13), //
+    Letter(-1);
+    
+    private int code;
+    
+    private PaperSize(int code) {
+      this.code = code;
+    }
   }
   
   public void setFitToWidth(Integer fitToWidth) {
@@ -25,6 +43,16 @@ public class PageSetup {
     this.orientation = orientation;
   }
   
+  public void setPaperSize(PaperSize paperSize) {
+    
+    if (paperSize == PaperSize.Letter) {
+      this.paperSize = null;
+      return;
+    }
+    
+    this.paperSize = paperSize;
+  }
+  
   boolean printHeader(PrintStream out) {
     if (fitToWidth == null && fitToHeight == null) return false;
     
@@ -37,6 +65,12 @@ public class PageSetup {
     StringBuffer sb = new StringBuffer();
     
     sb.append("<pageSetup scale=\"74\" ");
+    
+    if (paperSize != null) {
+      sb.append(" paperSize=\"");
+      sb.append(paperSize.code);
+      sb.append("\"");
+    }
     
     if (fitToWidth != null) {
       sb.append(" fitToWidth=\"");
