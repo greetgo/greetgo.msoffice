@@ -40,6 +40,7 @@ public class Sheet {
   private final boolean finished = false;
   private PrintStream out;
   private final PageMargins pageMargins = new PageMargins();
+  private final PageSetup pageSetup = new PageSetup();
   private String displayName;
   private final MergeCells mergeCells = new MergeCells();
   
@@ -51,6 +52,32 @@ public class Sheet {
   
   public PageMargins pageMargins() {
     return pageMargins;
+  }
+  
+  public PageSetup pageSetup() {
+    return pageSetup;
+  }
+  
+  /**
+   * Положение страницы: горизонтальное Landscape, вертикальное Portrait
+   */
+  public void setPageOrientation(PageSetup.Orientation orientation) {
+    pageSetup.setOrientation(orientation);
+  }
+  
+  /**
+   * Фомат бумаги: A4, A5, Letter, etc
+   */
+  public void setPageSize(PageSetup.PaperSize paperSize) {
+    pageSetup.setPaperSize(paperSize);
+  }
+  
+  /**
+   * При печати подгонять масштаб под ширину страницы
+   */
+  public void setScaleByWidth() {
+    pageSetup.setFitToHeight(0);
+    pageSetup.setFitToWidth(1);
   }
   
   public String getDisplayName() {
@@ -395,9 +422,13 @@ public class Sheet {
   }
   
   private void printSheetPr() {
+    
     out.println("<sheetPr>");
-    out.println("<outlinePr summaryBelow=\"" + (summaryBelow ? 1 :0) + "\" summaryRight=\""
-        + (summaryRight ? 1 :0) + "\" />");
+    
+    if (!pageSetup.printHeader(out)) {
+      out.println("<outlinePr summaryBelow=\"" + (summaryBelow ? 1 :0) + "\" summaryRight=\""
+          + (summaryRight ? 1 :0) + "\" />");
+    }
     
     out.println("</sheetPr>");
   }
@@ -433,6 +464,7 @@ public class Sheet {
     out.println("</sheetData>");
     mergeCells.print(out);
     pageMargins.print(out);
+    pageSetup.print(out);
     printDrawings();
     out.println("</worksheet>");
     out.close();
