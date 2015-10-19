@@ -16,6 +16,9 @@ public class ProbeGenDocx {
   public static void main(String[] args) {
     Docx docx = new Docx();
     
+    docx.getDocument().setLeft(2000);
+    docx.getDocument().setRight(2000);
+    
     Document doc = docx.getDocument();
     {
       Para para = doc.createPara();
