@@ -134,6 +134,26 @@ public class Sheet {
     return this;
   }
   
+  public Sheet cellInlineStr(int col, String strValue) {
+    init();
+    setLastColumn(col);
+    style.clearNumFmt();
+    
+    if (strValue == null) {
+      int styleIndex = style.index();
+      String pos = UtilOffice.toTablePosition(curRow, col - 1);
+      out.printf("<c r=\"%s\" s=\"%d\" t=\"inlineStr\"></c>", pos, styleIndex);
+      out.println();
+    } else {
+      int styleIndex = style.index();
+      String pos = UtilOffice.toTablePosition(curRow, col - 1);
+      out.printf("<c r=\"%s\" s=\"%d\" t=\"inlineStr\"><is><t>" + strValue + "</t></is></c>", pos,
+          styleIndex);
+      out.println();
+    }
+    return this;
+  }
+  
   public Sheet cellStr(int col, String strValue) {
     init();
     setLastColumn(col);
