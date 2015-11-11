@@ -35,8 +35,8 @@ public class SimpleFastXlsxFile {
   }
   
   private void prepareFiles() throws Exception {
-    ZipInputStream zin = new ZipInputStream(getClass().getResourceAsStream(
-        "SimpleXlsxFile.template.xlsx"));
+    ZipInputStream zin = new ZipInputStream(
+        getClass().getResourceAsStream("SimpleXlsxFile.template.xlsx"));
     try {
       
       byte buf[] = new byte[1024 * 4];
@@ -78,8 +78,8 @@ public class SimpleFastXlsxFile {
     closeCurrentSheet();
     sheetNumber++;
     try {
-      outCurrentSheet = new PrintStream(workingDir + "/zip/xl/worksheets/sheet" + sheetNumber
-          + ".xml", "UTF-8");
+      outCurrentSheet = new PrintStream(
+          workingDir + "/zip/xl/worksheets/sheet" + sheetNumber + ".xml", "UTF-8");
       outCurrentSheet.println("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
       outCurrentSheet
           .println("<worksheet xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\""
@@ -106,8 +106,8 @@ public class SimpleFastXlsxFile {
   
   public void appendRow(SimpleRowStyle rowStyle, String[] rowData) {
     if (rowData == null) throw new NullPointerException("rowData == null");
-    if (rowData.length != colWidths.length) throw new NullPointerException("rowData.length == "
-        + rowData.length + " but must be == " + colWidths.length);
+    if (rowData.length != colWidths.length) throw new NullPointerException(
+        "rowData.length == " + rowData.length + " but must be == " + colWidths.length);
     if (sheetNumber <= 0) throw new RuntimeException("No sheet");
     outCurrentSheet.print("<row r=\"" + currentRow + "\">");
     for (int i = 0, C = rowData.length; i < C; i++) {
@@ -143,33 +143,40 @@ public class SimpleFastXlsxFile {
   public void complete(OutputStream output) {
     try {
       
-      closeCurrentSheet();
+      try {
+        complete0(output);
+      } finally {
+        output.close();
+      }
       
-      ZipOutputStream zout = new ZipOutputStream(output);
-      
-      byte[] buffer = new byte[1024 * 4];
-      
-      new File(workingDir + "/zip/xl/workbook.xml").delete();
-      new File(workingDir + "/zip/[Content_Types].xml").delete();
-      new File(workingDir + "/zip/xl/_rels/workbook.xml.rels").delete();
-      new File(workingDir + "/zip/docProps/app.xml").delete();
-      
-      new File(workingDir + "/zip/xl/sharedStrings.xml").delete();
-      
-      copyAll(zout, null, workingDir + "/zip", buffer);
-      
-      printWorkbook(zout);
-      printContentTypes(zout);
-      printWorkbookXmlRels(zout);
-      printApp(zout);
-      
-      printSharedStrings(zout);
-      
-      zout.close();
     } catch (Exception e) {
+      if (e instanceof RuntimeException) throw (RuntimeException)e;
       throw new RuntimeException(e);
     }
+  }
+  
+  private void complete0(OutputStream output) throws Exception {
+    closeCurrentSheet();
     
+    ZipOutputStream zout = new ZipOutputStream(output);
+    
+    byte[] buffer = new byte[1024 * 4];
+    
+    new File(workingDir + "/zip/xl/workbook.xml").delete();
+    new File(workingDir + "/zip/[Content_Types].xml").delete();
+    new File(workingDir + "/zip/xl/_rels/workbook.xml.rels").delete();
+    new File(workingDir + "/zip/docProps/app.xml").delete();
+    
+    new File(workingDir + "/zip/xl/sharedStrings.xml").delete();
+    
+    copyAll(zout, null, workingDir + "/zip", buffer);
+    
+    printWorkbook(zout);
+    printContentTypes(zout);
+    printWorkbookXmlRels(zout);
+    printApp(zout);
+    
+    printSharedStrings(zout);
   }
   
   private void copyAll(ZipOutputStream zout, String localDir, String realDir, byte[] buffer)
@@ -223,13 +230,13 @@ public class SimpleFastXlsxFile {
     PrintStream out = new PrintStream(zout, false, "UTF-8");
     
     out.println("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
-    out.println("<workbook xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">\n"
-        + "  <fileVersion appName=\"xl\" lastEdited=\"4\" lowestEdited=\"4\" rupBuild=\"4505\" />\n"
-        + "  <workbookPr defaultThemeVersion=\"124226\" />\n"
-        + "  <bookViews>\n"
-        + "    <workbookView xWindow=\"240\" yWindow=\"15\" windowWidth=\"25680\" windowHeight=\"10305\" />\n"
-        + "  </bookViews>");
-    
+    out.println(
+        "<workbook xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">\n"
+            + "  <fileVersion appName=\"xl\" lastEdited=\"4\" lowestEdited=\"4\" rupBuild=\"4505\" />\n"
+            + "  <workbookPr defaultThemeVersion=\"124226\" />\n" + "  <bookViews>\n"
+            + "    <workbookView xWindow=\"240\" yWindow=\"15\" windowWidth=\"25680\" windowHeight=\"10305\" />\n"
+            + "  </bookViews>");
+            
     out.println("<sheets>");
     for (int i = 0; i < sheetNumber; i++) {
       out.println("<sheet name=\"Лист" + (i + 1) + "\" sheetId=\"" + (i + 1) + "\" r:id=\"rId"
@@ -264,7 +271,7 @@ public class SimpleFastXlsxFile {
         + "  <Override PartName=\"/xl/sharedStrings.xml\"\n"
         + "    ContentType=\"application/vnd.openxmlformats-officedocument.spreadsheetml.sharedStrings+xml\" />\n"
         + "  <Override PartName=\"/docProps/core.xml\" ContentType=\"application/vnd.openxmlformats-package.core-properties+xml\" />");
-    
+        
     for (int i = 0; i < sheetNumber; i++) {
       out.println("<Override PartName=\"/xl/worksheets/sheet" + (i + 1) + ".xml\"\n"
           + "    ContentType=\"application/vnd.openxmlformats-officedocument."
@@ -284,14 +291,15 @@ public class SimpleFastXlsxFile {
     PrintStream out = new PrintStream(zout, false, "UTF-8");
     
     out.println("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
-    out.println("<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">\n"
-        + "  <Relationship Id=\"rId3\"\n"
-        + "    Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/sharedStrings\" Target=\"sharedStrings.xml\" />\n"
-        + "  <Relationship Id=\"rId1\"\n"
-        + "    Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles\" Target=\"styles.xml\" />\n"
-        + "  <Relationship Id=\"rId2\"\n"
-        + "    Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme\" Target=\"theme/theme1.xml\" />");
-    
+    out.println(
+        "<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">\n"
+            + "  <Relationship Id=\"rId3\"\n"
+            + "    Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/sharedStrings\" Target=\"sharedStrings.xml\" />\n"
+            + "  <Relationship Id=\"rId1\"\n"
+            + "    Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles\" Target=\"styles.xml\" />\n"
+            + "  <Relationship Id=\"rId2\"\n"
+            + "    Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme\" Target=\"theme/theme1.xml\" />");
+            
     for (int i = 0; i < sheetNumber; i++) {
       out.println("<Relationship Id=\"rId" + (i + 4) + "\"\n"
           + "    Type=\"http://schemas.openxmlformats.org/officeDocument/2006/"
@@ -311,22 +319,16 @@ public class SimpleFastXlsxFile {
     PrintStream out = new PrintStream(zout, false, "UTF-8");
     
     out.println("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
-    out.println("<Properties xmlns=\"http://schemas.openxmlformats.org/officeDocument/2006/extended-properties\"\n"
-        + "  xmlns:vt=\"http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes\">\n"
-        + "  <Application>Microsoft Excel</Application>\n"
-        + "  <DocSecurity>0</DocSecurity>\n"
-        + "  <ScaleCrop>false</ScaleCrop>\n"
-        + "  <HeadingPairs>\n"
-        + "    <vt:vector size=\"2\" baseType=\"variant\">\n"
-        + "      <vt:variant>\n"
-        + "        <vt:lpstr>Листы</vt:lpstr>\n"
-        + "      </vt:variant>\n"
-        + "      <vt:variant>\n"
-        + "        <vt:i4>3</vt:i4>\n"
-        + "      </vt:variant>\n"
-        + "    </vt:vector>\n"
-        + "  </HeadingPairs>\n" + "  <TitlesOfParts>");
-    
+    out.println(
+        "<Properties xmlns=\"http://schemas.openxmlformats.org/officeDocument/2006/extended-properties\"\n"
+            + "  xmlns:vt=\"http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes\">\n"
+            + "  <Application>Microsoft Excel</Application>\n" + "  <DocSecurity>0</DocSecurity>\n"
+            + "  <ScaleCrop>false</ScaleCrop>\n" + "  <HeadingPairs>\n"
+            + "    <vt:vector size=\"2\" baseType=\"variant\">\n" + "      <vt:variant>\n"
+            + "        <vt:lpstr>Листы</vt:lpstr>\n" + "      </vt:variant>\n"
+            + "      <vt:variant>\n" + "        <vt:i4>3</vt:i4>\n" + "      </vt:variant>\n"
+            + "    </vt:vector>\n" + "  </HeadingPairs>\n" + "  <TitlesOfParts>");
+            
     out.println("<vt:vector size=\"" + sheetNumber + "\" baseType=\"lpstr\">");
     
     for (int i = 0; i < sheetNumber; i++) {
@@ -339,7 +341,7 @@ public class SimpleFastXlsxFile {
         + "  <LinksUpToDate>false</LinksUpToDate>\n" + "  <SharedDoc>false</SharedDoc>\n"
         + "  <HyperlinksChanged>false</HyperlinksChanged>\n"
         + "  <AppVersion>12.0000</AppVersion>\n" + "</Properties>");
-    
+        
     out.flush();
     
     zout.closeEntry();
