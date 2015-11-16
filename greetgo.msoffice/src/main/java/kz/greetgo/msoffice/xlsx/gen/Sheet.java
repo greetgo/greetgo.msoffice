@@ -46,9 +46,10 @@ public class Sheet {
   
   private int lastColumn;
   
-  private final List<TwoCellAnchor> drawing = new ArrayList<>();
-  private Integer drawingFileId;
-  private int drawingRelIdLast = 0;
+  private final List<TwoCellAnchor> drawing = new ArrayList<>(); // графические объекты листа
+  private Integer drawingFileId; // номер файла графики для листа
+  private int drawingRelIdLast = 0; // счётчик ссылок графических объектов внутри файла графики для листа
+  private Map<Image, Integer> imagesrels = new HashMap<>(); // картинка -> ссылка графического объекта в листе   
   
   public PageMargins pageMargins() {
     return pageMargins;
@@ -586,7 +587,7 @@ public class Sheet {
     addChart(chart, new SheetCoord(colFrom, rowFrom), new SheetCoord(colTo, rowTo));
   }
   
-  public void addImage(byte[] img, ImageType type, SheetCoord coordFrom, SheetCoord coordTo) {
+  public Image addImage(byte[] img, ImageType type, SheetCoord coordFrom, SheetCoord coordTo) {
     
     if (img == null) throw new IllegalArgumentException("Не задано изображение");
     if (img.length == 0) throw new IllegalArgumentException("Задано пустое изображение");
@@ -594,10 +595,10 @@ public class Sheet {
     
     InputStream is = new ByteArrayInputStream(img);
     
-    addImage(is, type, coordFrom, coordTo);
+    return addImage(is, type, coordFrom, coordTo);
   }
   
-  public void addImage(File file, SheetCoord coordFrom, SheetCoord coordTo) {
+  public Image addImage(File file, SheetCoord coordFrom, SheetCoord coordTo) {
     
     if (file == null) throw new IllegalArgumentException("Не задан файл с изображением");
     if (!file.exists()) throw new IllegalArgumentException(
@@ -614,10 +615,10 @@ public class Sheet {
       throw new IllegalArgumentException("Указанный файл с изображением не найден", ex);
     }
     
-    addImage(is, type, coordFrom, coordTo);
+    return addImage(is, type, coordFrom, coordTo);
   }
   
-  public void addImage(InputStream is, ImageType type, SheetCoord coordFrom, SheetCoord coordTo) {
+  public Image addImage(InputStream is, ImageType type, SheetCoord coordFrom, SheetCoord coordTo) {
     
     if (is == null) throw new IllegalArgumentException("Не задан поток с изображением");
     if (type == null) throw new IllegalArgumentException("Не задан тип изображения");
@@ -636,9 +637,29 @@ public class Sheet {
     } catch (Exception ex) {}
     
     setDrawingId();
-    TwoCellAnchor anchor = new TwoCellAnchorImage(++drawingRelIdLast, filename, coordFrom, coordTo);
+    
+    Image image = new Image(filename, type);
+    imagesrels.put(image, Integer.valueOf(++drawingRelIdLast));
+    TwoCellAnchor anchor = new TwoCellAnchorImage(imagesrels.get(image), image, coordFrom, coordTo);
     drawing.add(anchor);
-    parent.imageexts.add(type.getExt());
+    parent.imageexts.add(image.getImageType().getExt());
+    
+    return image;
+  }
+  
+  public void addImage(Image image, SheetCoord coordFrom, SheetCoord coordTo) {
+    
+    if (image == null) throw new IllegalArgumentException("Не задано изображение");
+    if (image.getFilename() == null) throw new IllegalArgumentException("Не задано изображение");
+    
+    setDrawingId();
+    
+    Integer imagerel = imagesrels.get(image);
+    if (imagerel == null) imagesrels.put(image, Integer.valueOf(++drawingRelIdLast));
+    
+    TwoCellAnchor anchor = new TwoCellAnchorImage(imagesrels.get(image), image, coordFrom, coordTo);
+    drawing.add(anchor);
+    parent.imageexts.add(image.getImageType().getExt());
   }
   
   private void setDrawingId() {
@@ -652,6 +673,10 @@ public class Sheet {
   
   List<TwoCellAnchor> getDrawing() {
     return drawing;
+  }
+  
+  Map<Image, Integer> getImagesRels() {
+    return imagesrels;
   }
   
   private void printDrawings() {

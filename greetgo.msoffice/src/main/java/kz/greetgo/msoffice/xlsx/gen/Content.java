@@ -7,6 +7,7 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import kz.greetgo.msoffice.UtilOffice;
 
@@ -295,10 +296,20 @@ public class Content {
       for (TwoCellAnchor anch : sheet.getDrawing()) {
         anch.print(os);
         
+        if (anch instanceof TwoCellAnchorImage) continue;
+        
         osrel.print("<Relationship Id=\"rId");
         osrel.print(anch.getRelId());
         osrel.print("\" Type=\"");
         osrel.print(anch.getType());
+        osrel.print("\"/>");
+      }
+      
+      for (Map.Entry<Image, Integer> e : sheet.getImagesRels().entrySet()) {
+        osrel.print("<Relationship Id=\"rId");
+        osrel.print(e.getValue());
+        osrel.print("\" Type=\"");
+        osrel.print(e.getKey().getType());
         osrel.print("\"/>");
       }
       
