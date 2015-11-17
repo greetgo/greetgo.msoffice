@@ -55,4 +55,22 @@ public class SheetCoord {
     this.coloff = coloff;
     this.rowoff = rowoff;
   }
+  
+  @Override
+  public String toString() {
+    
+    StringBuilder builder = new StringBuilder();
+    
+    builder.append("SheetCoord [col=");
+    builder.append(col);
+    builder.append(", row=");
+    builder.append(row);
+    builder.append(", coloff=");
+    builder.append(coloff);
+    builder.append(", rowoff=");
+    builder.append(rowoff);
+    builder.append("]");
+    
+    return builder.toString();
+  }
 }

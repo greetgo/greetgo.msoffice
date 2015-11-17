@@ -7,14 +7,14 @@ import java.io.PrintStream;
  */
 class TwoCellAnchorImage extends TwoCellAnchor {
   
-  private final int relid; // id уникальной ссылки на графический объект
-  private final String filename; // имя файла с изображением
+  private final int relid; // id уникальной ссылки на графический объект внутри листа
+  private final Image image; // графический объект -- изображение
   
-  public TwoCellAnchorImage(int relid, String filename, SheetCoord coordFrom, SheetCoord coordTo) {
+  public TwoCellAnchorImage(int relid, Image image, SheetCoord coordFrom, SheetCoord coordTo) {
     
     super(coordFrom, coordTo);
     this.relid = relid;
-    this.filename = filename;
+    this.image = image;
   }
   
   @Override
@@ -24,8 +24,7 @@ class TwoCellAnchorImage extends TwoCellAnchor {
   
   @Override
   String getType() {
-    return "http://schemas.openxmlformats.org/officeDocument/2006/relationships/image\" Target=\"../media/"
-        + filename;
+    return image.getType();
   }
   
   @Override
@@ -33,7 +32,7 @@ class TwoCellAnchorImage extends TwoCellAnchor {
     
     StringBuffer buf = new StringBuffer();
     
-    buf.append("<xdr:twoCellAnchor><xdr:from><xdr:col>");
+    buf.append("<xdr:twoCellAnchor editAs=\"absolute\"><xdr:from><xdr:col>");
     buf.append(col1 - 1);
     buf.append("</xdr:col><xdr:colOff>");
     buf.append(col1off);

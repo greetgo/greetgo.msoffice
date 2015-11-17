@@ -8,6 +8,7 @@ import kz.greetgo.msoffice.xlsx.gen.Chart;
 import kz.greetgo.msoffice.xlsx.gen.ChartType;
 import kz.greetgo.msoffice.xlsx.gen.Color;
 import kz.greetgo.msoffice.xlsx.gen.FontName;
+import kz.greetgo.msoffice.xlsx.gen.Image;
 import kz.greetgo.msoffice.xlsx.gen.NumFmt;
 import kz.greetgo.msoffice.xlsx.gen.PageSetup.Orientation;
 import kz.greetgo.msoffice.xlsx.gen.PageSetup.PaperSize;
@@ -128,9 +129,18 @@ public class GenXlsxGraphProbe {
     chart.setAlignmentLegend(Align.right);
     chart.setRotation(60);
     
-    sh.addImage(new File("/home/aboldyrev/1.png"), new SheetCoord("b23"), new SheetCoord("h38"));
+    Image image = sh.addImage(new File("/home/aboldyrev/1.png"), new SheetCoord("b23"),
+        new SheetCoord("h38"));
     
     sh2.addImage(new File("/home/aboldyrev/2.png"), new SheetCoord("d14"), new SheetCoord("g20"));
+    sh2.addImage(image, new SheetCoord("d22"), new SheetCoord("f26"));
+    sh2.addImage(image, new SheetCoord("d28"), new SheetCoord("f33"));
+    sh2.addImage(image, new SheetCoord("d35"), new SheetCoord("f40"));
+    
+    sh2.addImage(image, new SheetCoord("d42"), 10);
+    sh2.addImage(image, new SheetCoord("d45"), 30);
+    sh2.addImage(image, new SheetCoord("d50"), 70);
+    sh2.addImage(image, new SheetCoord("d59"), 100);
     
     // запись
     
