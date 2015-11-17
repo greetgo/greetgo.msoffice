@@ -137,6 +137,11 @@ public class GenXlsxGraphProbe {
     sh2.addImage(image, new SheetCoord("d28"), new SheetCoord("f33"));
     sh2.addImage(image, new SheetCoord("d35"), new SheetCoord("f40"));
     
+    sh2.addImage(image, new SheetCoord("d42"), 10);
+    sh2.addImage(image, new SheetCoord("d45"), 30);
+    sh2.addImage(image, new SheetCoord("d50"), 70);
+    sh2.addImage(image, new SheetCoord("d59"), 100);
+    
     // запись
     
     FileOutputStream os = new FileOutputStream("/home/aboldyrev/tmp/vb/graph-probe.xlsx");

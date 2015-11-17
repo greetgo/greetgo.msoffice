@@ -42,4 +42,9 @@ public class Image {
     
     return filename.equals(((Image)o).filename);
   }
+  
+  //для рассчёта координат правого нижнего угла
+  
+  int height;
+  int width;
 }

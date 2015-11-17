@@ -32,7 +32,7 @@ class TwoCellAnchorImage extends TwoCellAnchor {
     
     StringBuffer buf = new StringBuffer();
     
-    buf.append("<xdr:twoCellAnchor><xdr:from><xdr:col>");
+    buf.append("<xdr:twoCellAnchor editAs=\"absolute\"><xdr:from><xdr:col>");
     buf.append(col1 - 1);
     buf.append("</xdr:col><xdr:colOff>");
     buf.append(col1off);

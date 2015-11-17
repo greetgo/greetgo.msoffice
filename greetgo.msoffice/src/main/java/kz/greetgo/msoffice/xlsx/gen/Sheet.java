@@ -1,5 +1,6 @@
 package kz.greetgo.msoffice.xlsx.gen;
 
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -14,6 +15,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.imageio.ImageIO;
 
 import kz.greetgo.msoffice.ImageType;
 import kz.greetgo.msoffice.UtilOffice;
@@ -35,6 +38,7 @@ public class Sheet {
   private boolean inRow = false;
   
   private final Map<Integer, Double> widths = new HashMap<Integer, Double>();
+  private final Map<Integer, Double> heights = new HashMap<Integer, Double>();
   final boolean selected;
   private boolean started = false;
   private final boolean finished = false;
@@ -337,6 +341,7 @@ public class Sheet {
       if (height != null) {
         after.append(" customHeight=\"1\"");
         out.printf(" ht=\"%s\"", height.toString());
+        heights.put(Integer.valueOf(curRow), height);
       }
       if (hidden) {
         out.print(" hidden=\"1\"");
@@ -588,65 +593,46 @@ public class Sheet {
   }
   
   public Image addImage(byte[] img, ImageType type, SheetCoord coordFrom, SheetCoord coordTo) {
-    
-    if (img == null) throw new IllegalArgumentException("Не задано изображение");
-    if (img.length == 0) throw new IllegalArgumentException("Задано пустое изображение");
-    if (type == null) throw new IllegalArgumentException("Не задан тип изображения");
-    
-    InputStream is = new ByteArrayInputStream(img);
-    
+    InputStream is = getISFromBytes(img, type);
     return addImage(is, type, coordFrom, coordTo);
+  }
+  
+  public Image addImage(byte[] img, ImageType type, SheetCoord coordFrom, int percentOfSize) {
+    InputStream is = getISFromBytes(img, type);
+    return addImage(is, type, coordFrom, percentOfSize);
   }
   
   public Image addImage(File file, SheetCoord coordFrom, SheetCoord coordTo) {
     
-    if (file == null) throw new IllegalArgumentException("Не задан файл с изображением");
-    if (!file.exists()) throw new IllegalArgumentException(
-        "Указанный файл с изображением не существует");
-    
-    ImageType type = ImageType.getByExt(file.getName().substring(
-        file.getName().lastIndexOf(".") + 1));
-    if (type == null) throw new IllegalArgumentException("Неизвестный тип изображения");
-    
-    InputStream is = null;
-    try {
-      is = new FileInputStream(file);
-    } catch (FileNotFoundException ex) {
-      throw new IllegalArgumentException("Указанный файл с изображением не найден", ex);
-    }
-    
+    InputStream is = getISFromFile(file);
+    ImageType type = getImageTypeFromFile(file);
     return addImage(is, type, coordFrom, coordTo);
+  }
+  
+  public Image addImage(File file, SheetCoord coordFrom, int percentOfSize) {
+    
+    InputStream is = getISFromFile(file);
+    ImageType type = getImageTypeFromFile(file);
+    return addImage(is, type, coordFrom, percentOfSize);
   }
   
   public Image addImage(InputStream is, ImageType type, SheetCoord coordFrom, SheetCoord coordTo) {
     
-    if (is == null) throw new IllegalArgumentException("Не задан поток с изображением");
-    if (type == null) throw new IllegalArgumentException("Не задан тип изображения");
-    
-    int fileid = parent.newImageFileId();
-    String filename = "image" + fileid + "." + type.getExt();
-    
-    try {
-      String dir = workDir + "/xl/media";
-      new File(dir).mkdirs();
-      
-      File os = new File(dir + "/" + filename);
-      Files.copy(is, os.toPath());
-      
-      is.close();
-    } catch (Exception ex) {}
-    
-    setDrawingId();
-    
-    Image image = new Image(filename, type);
-    imagesrels.put(image, Integer.valueOf(++drawingRelIdLast));
-    TwoCellAnchor anchor = new TwoCellAnchorImage(imagesrels.get(image), image, coordFrom, coordTo);
-    drawing.add(anchor);
-    parent.imageexts.add(image.getImageType().getExt());
-    
+    Image image = addImageFile(is, type);
+    addImage(image, coordFrom, coordTo);
     return image;
   }
   
+  public Image addImage(InputStream is, ImageType type, SheetCoord coordFrom, int percentOfSize) {
+    
+    Image image = addImageFile(is, type);
+    addImage(image, coordFrom, percentOfSize);
+    return image;
+  }
+  
+  /**
+   * Добавление объекта с изображением, прописываются внутренние ссылки и связи.
+   */
   public void addImage(Image image, SheetCoord coordFrom, SheetCoord coordTo) {
     
     if (image == null) throw new IllegalArgumentException("Не задано изображение");
@@ -657,9 +643,145 @@ public class Sheet {
     Integer imagerel = imagesrels.get(image);
     if (imagerel == null) imagesrels.put(image, Integer.valueOf(++drawingRelIdLast));
     
-    TwoCellAnchor anchor = new TwoCellAnchorImage(imagesrels.get(image), image, coordFrom, coordTo);
+    TwoCellAnchor anchor;
+    anchor = new TwoCellAnchorImage(imagesrels.get(image), image, coordFrom, coordTo);
+    
     drawing.add(anchor);
     parent.imageexts.add(image.getImageType().getExt());
+  }
+  
+  private final static double K_IMAGEX = .1285; // коэффициент для пикселов изображения по ширине
+  private final static double K_IMAGEY = 0.74; // по высоте
+  
+  public void addImage(Image image, SheetCoord coordFrom, int percentOfSize) {
+    
+    SheetCoord coordTo = new SheetCoord();
+    coordTo.col = coordFrom.col;
+    coordTo.row = coordFrom.row;
+    
+    // размеры изображения в excel
+    
+    double imagewidthexp = image.width * K_IMAGEX * percentOfSize / 100;
+    double imageheightexp = image.height * K_IMAGEY * percentOfSize / 100;
+    
+    // вычисление колонки правой нижней ячейки 
+    
+    double imagewidth = getColWidth(coordFrom.col) - coordFrom.coloff / K_COLOFF;
+    
+    while (imagewidth < imagewidthexp) {
+      coordTo.col++;
+      imagewidth += getColWidth(coordFrom.col);
+    }
+    
+    coordTo.coloff = (int)((imagewidthexp - imagewidth) * K_COLOFF);
+    
+    // вычисление строки правой нижней ячейки
+    
+    double imageheight = getRowHeight(coordFrom.row) - coordFrom.rowoff / K_ROWOFF;
+    
+    while (imageheight < imageheightexp) {
+      coordTo.row++;
+      imageheight += getRowHeight(coordFrom.row);
+    }
+    
+    coordTo.rowoff = (int)((imageheightexp - imageheight) * K_ROWOFF);
+    
+    addImage(image, coordFrom, coordTo);
+  }
+  
+  private final static long K_COLOFF = 65500; // для отступов по горизонтали
+  private final static long K_ROWOFF = 11500; // для отступов по вертикали
+  
+  private double getColWidth(int col) {
+    
+    double width = 8.43; // ширина колонки по-умолчанию
+    Double mapwidth = widths.get(Integer.valueOf(col));
+    if (mapwidth != null && mapwidth > 0) width = mapwidth.doubleValue();
+    
+    return width;
+  }
+  
+  private double getRowHeight(int row) {
+    
+    double height = 15.0; // ширина колонки по-умолчанию
+    Double mapheight = heights.get(Integer.valueOf(row));
+    if (mapheight != null && mapheight > 0) height = mapheight.doubleValue();
+    
+    return height;
+  }
+  
+  /**
+   * Добавление файла с изображением.
+   * 
+   * @param is
+   *          Поток с изображением
+   * @param type
+   *          Формат файла
+   * @param getImageSize
+   *          нужно ли определить размеры изображения
+   * 
+   * @return Объект с картинкой
+   */
+  private Image addImageFile(InputStream is, ImageType type) {
+    
+    if (is == null) throw new IllegalArgumentException("Не задан поток с изображением");
+    if (type == null) throw new IllegalArgumentException("Не задан тип изображения");
+    
+    int fileid = parent.newImageFileId();
+    String filename = "image" + fileid + "." + type.getExt();
+    Image image = new Image(filename, type);
+    
+    try {
+      String dir = workDir + "/xl/media";
+      new File(dir).mkdirs();
+      
+      File os = new File(dir + "/" + filename);
+      Files.copy(is, os.toPath());
+      
+      is.close();
+      
+      BufferedImage img = ImageIO.read(os);
+      image.height = img.getHeight();
+      image.width = img.getWidth();
+    } catch (Exception ex) {}
+    
+    return image;
+  }
+  
+  private InputStream getISFromBytes(byte[] img, ImageType type) {
+    
+    if (img == null) throw new IllegalArgumentException("Не задано изображение");
+    if (img.length == 0) throw new IllegalArgumentException("Задано пустое изображение");
+    if (type == null) throw new IllegalArgumentException("Не задан тип изображения");
+    
+    InputStream is = new ByteArrayInputStream(img);
+    
+    return is;
+  }
+  
+  private InputStream getISFromFile(File file) {
+    
+    if (file == null) throw new IllegalArgumentException("Не задан файл с изображением");
+    if (!file.exists()) throw new IllegalArgumentException(
+        "Указанный файл с изображением не существует");
+    
+    InputStream is = null;
+    try {
+      is = new FileInputStream(file);
+    } catch (FileNotFoundException ex) {
+      throw new IllegalArgumentException("Указанный файл с изображением не найден", ex);
+    }
+    
+    return is;
+  }
+  
+  private ImageType getImageTypeFromFile(File file) {
+    
+    ImageType type = ImageType.getByExt(file.getName().substring(
+        file.getName().lastIndexOf(".") + 1));
+    if (type == null) throw new IllegalArgumentException("Неизвестный тип изображения");
+    
+    return type;
   }
   
   private void setDrawingId() {

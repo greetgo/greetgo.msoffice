@@ -11,14 +11,14 @@ abstract class TwoCellAnchor {
   // верхний левый угол
   protected final int col1; // колонка, нумерация с 1
   protected final int row1; // строка, нумерация с 1
-  protected final int col1off; // отступ от начала колонки
-  protected final int row1off; // отступ от начала строки
+  protected final long col1off; // отступ от начала колонки
+  protected final long row1off; // отступ от начала строки
   
   // правый нижний угол
   protected final int col2; // колонка, нумерация с 1
   protected final int row2; // строка, нумерация с 1
-  protected final int col2off; // отступ от начала колонки
-  protected final int row2off; // отступ от начала строки
+  protected final long col2off; // отступ от начала колонки
+  protected final long row2off; // отступ от начала строки
   
   public TwoCellAnchor(SheetCoord coordFrom, SheetCoord coordTo) {
     
