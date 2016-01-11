@@ -142,6 +142,40 @@ public class GenXlsxGraphProbe {
     sh2.addImage(image, new SheetCoord("d50"), 70);
     sh2.addImage(image, new SheetCoord("d59"), 100);
     
+    // скрытие колонок
+    
+    Sheet sh3 = excel.newSheet(false);
+    
+    sh3.setHidden(5);
+    sh3.setHidden(3);
+    sh3.setHidden(7);
+    
+    sh3.row().start();
+    sh3.cellStr(2, "2");
+    sh3.cellStr(3, "3");
+    sh3.cellStr(4, "4");
+    sh3.cellStr(5, "5");
+    sh3.row().finish();
+    
+    Sheet sh4 = excel.newSheet(false);
+    
+    sh4.setWidth(2, 10);
+    sh4.setWidth(3, 20);
+    sh4.setWidth(4, 30);
+    sh4.setWidth(6, 50);
+    
+    sh4.setHidden(5);
+    sh4.setHidden(3);
+    sh4.setHidden(7);
+    sh4.setHidden(9);
+    
+    sh4.row().start();
+    sh4.cellStr(2, "10");
+    sh4.cellStr(3, "20");
+    sh4.cellStr(4, "30");
+    sh4.cellStr(5, "40");
+    sh4.row().finish();
+    
     // запись
     
     FileOutputStream os = new FileOutputStream("/home/aboldyrev/tmp/vb/graph-probe.xlsx");

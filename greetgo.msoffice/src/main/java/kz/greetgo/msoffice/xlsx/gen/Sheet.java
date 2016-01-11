@@ -10,11 +10,13 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import javax.imageio.ImageIO;
 
@@ -38,6 +40,7 @@ public class Sheet {
   private boolean inRow = false;
   
   private final Map<Integer, Double> widths = new HashMap<Integer, Double>();
+  private final Set<Integer> colhiddens = new HashSet<Integer>();
   private final Map<Integer, Double> heights = new HashMap<Integer, Double>();
   final boolean selected;
   private boolean started = false;
@@ -374,6 +377,11 @@ public class Sheet {
     widths.clear();
   }
   
+  public void cleanHiddens() {
+    checkNotStarted();
+    colhiddens.clear();
+  }
+  
   private void checkNotStarted() {
     if (started) {
       throw new IllegalStateException("Cannot change widths when data filling has begun");
@@ -384,6 +392,13 @@ public class Sheet {
     if (col <= 0) throw new IllegalArgumentException("must be: col > 0, but col = " + col);
     checkNotStarted();
     widths.put(col, width);
+  }
+  
+  /** Скрыть колонку */
+  public void setHidden(int col) {
+    if (col <= 0) throw new IllegalArgumentException("must be: col > 0, but col = " + col);
+    checkNotStarted();
+    colhiddens.add(Integer.valueOf(col));
   }
   
   public Style style() {
@@ -474,14 +489,22 @@ public class Sheet {
   }
   
   private void printWidths() {
-    if (widths.size() == 0) return;
-    List<Integer> keys = new ArrayList<Integer>();
+    
+    if (widths.size() == 0 && colhiddens.size() == 0) return;
+    
+    Set<Integer> keys = new TreeSet<>();
     keys.addAll(widths.keySet());
-    Collections.sort(keys);
+    keys.addAll(colhiddens);
+    
     out.println("<cols>");
     for (Integer key : keys) {
-      out.printf("<col min=\"%d\" max=\"%d\" width=\"%s\" customWidth=\"1\" />", key, key, widths
-          .get(key).toString());
+      out.printf("<col min=\"%d\" max=\"%d\" ", key, key);
+      
+      if (widths.get(key) != null) out.printf("width=\"%s\" ", widths.get(key).toString());
+      
+      if (colhiddens.contains(key)) out.printf("hidden=\"1\" ");
+      
+      out.printf("customWidth=\"1\" />");
     }
     out.println("</cols>");
   }
