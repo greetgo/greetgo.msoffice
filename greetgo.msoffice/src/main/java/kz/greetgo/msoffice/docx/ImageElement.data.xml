@@ -1,7 +1,9 @@
 <w:drawing>
-	<wp:inline distT="0" distB="0" distL="0" distR="0">
+	<wp:[[POSITION]] distT="0" distB="0" distL="0" distR="0" [[POSITION_PARAMS]]>
+	    [[POSITION_EXT_1]]
 		<wp:extent cx="[[CX]]" cy="[[CY]]" />
 		<wp:effectExtent l="19050" t="0" r="0" b="0" />
+		[[POSITION_EXT_2]]
 		<wp:docPr id="1" name="Рисунок 0" descr="kaspi_logo.png" />
 		<wp:cNvGraphicFramePr>
 			<a:graphicFrameLocks
@@ -34,5 +36,5 @@
 				</pic:pic>
 			</a:graphicData>
 		</a:graphic>
-	</wp:inline>
+	</wp:[[POSITION]]>
 </w:drawing>
