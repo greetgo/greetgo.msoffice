@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -102,6 +103,14 @@ public class XlsxParser {
     try {
       loadEx(in);
     } catch (Exception e) {
+      
+      if (connection != null) {
+        try {
+          connection.close();
+        } catch (SQLException e1) {}
+        connection = null;
+      }
+      
       if (e instanceof RuntimeException) {
         throw (RuntimeException)e;
       }
@@ -129,7 +138,11 @@ public class XlsxParser {
       }
       if (entry.getName().startsWith("xl/worksheets/") && entry.getName().endsWith(".xml")) {
         SheetHandler handler = new SheetHandler(connection, entry.getName(), sheetNo++);
-        saxParser().parse(UtilOffice.copy(zin), handler);
+        try {
+          saxParser().parse(UtilOffice.copy(zin), handler);
+        } finally {
+          handler.finishInsertion();
+        }
         zin.closeEntry();
         sheets.add(handler);
         continue;
@@ -146,22 +159,22 @@ public class XlsxParser {
     connection.setAutoCommit(false);
     
     {
-      PreparedStatement ps = connection.prepareStatement("create table strs ("
-          + "nom bigint not null primary key, value clob)");
+      PreparedStatement ps = connection
+          .prepareStatement("create table strs (" + "nom bigint not null primary key, value clob)");
       ps.execute();
       connection.commit();
       ps.close();
     }
     {
-      PreparedStatement ps = connection.prepareStatement(UtilOffice.streamToStr(getClass()
-          .getResourceAsStream("create_table_SHEETS.sql")));
+      PreparedStatement ps = connection.prepareStatement(
+          UtilOffice.streamToStr(getClass().getResourceAsStream("create_table_SHEETS.sql")));
       ps.execute();
       connection.commit();
       ps.close();
     }
     {
-      PreparedStatement ps = connection.prepareStatement(UtilOffice.streamToStr(getClass()
-          .getResourceAsStream("create_table_CELLS.sql")));
+      PreparedStatement ps = connection.prepareStatement(
+          UtilOffice.streamToStr(getClass().getResourceAsStream("create_table_CELLS.sql")));
       ps.execute();
       connection.commit();
       ps.close();

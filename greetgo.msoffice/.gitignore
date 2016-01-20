@@ -10,3 +10,4 @@
 /tomcat
 /war
 /*.log
+/tmp/

@@ -9,11 +9,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import kz.greetgo.msoffice.UtilOffice;
-
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
+
+import kz.greetgo.msoffice.UtilOffice;
 
 public class SheetHandler extends DefaultHandler implements Sheet {
   private final Connection connection;
@@ -33,11 +33,14 @@ public class SheetHandler extends DefaultHandler implements Sheet {
       try {
         PreparedStatement ps = connection
             .prepareStatement("insert into sheets (id, name) values (?, ?)");
-        ps.setInt(1, sheetNo);
-        ps.setString(2, name);
-        ps.executeUpdate();
-        connection.commit();
-        ps.close();
+        try {
+          ps.setInt(1, sheetNo);
+          ps.setString(2, name);
+          ps.executeUpdate();
+          connection.commit();
+        } finally {
+          ps.close();
+        }
       } catch (SQLException e) {
         throw new RuntimeException(e);
       }
@@ -53,9 +56,8 @@ public class SheetHandler extends DefaultHandler implements Sheet {
   @Override
   public void startDocument() throws SAXException {
     try {
-      cellsInsertPS = connection
-          .prepareStatement("insert into cells (sheet_id, n_row, n_col, t, s, v)"
-              + " values (?, ?, ?, ?, ?, ?)");
+      cellsInsertPS = connection.prepareStatement(
+          "insert into cells (sheet_id, n_row, n_col, t, s, v)" + " values (?, ?, ?, ?, ?, ?)");
       currentBachSize = 0;
     } catch (SQLException e) {
       throw new RuntimeException(e);
@@ -64,6 +66,11 @@ public class SheetHandler extends DefaultHandler implements Sheet {
   
   @Override
   public void endDocument() throws SAXException {
+    finishInsertion();
+  }
+  
+  public void finishInsertion() {
+    if (cellsInsertPS == null) return;
     try {
       if (currentBachSize > 0) {
         commit();
@@ -183,12 +190,14 @@ public class SheetHandler extends DefaultHandler implements Sheet {
   private void setSheetIsActiveEx(boolean active) throws Exception {
     PreparedStatement ps = connection
         .prepareStatement("update sheets set is_active = ? where id = ?");
-    ps.setInt(1, active ? 1 :0);
-    ps.setLong(2, sheetNo);
-    ps.executeUpdate();
-    connection.commit();
-    ps.close();
-    
+    try {
+      ps.setInt(1, active ? 1 :0);
+      ps.setLong(2, sheetNo);
+      ps.executeUpdate();
+      connection.commit();
+    } finally {
+      ps.close();
+    }
     this.active = active;
   }
   
@@ -272,18 +281,23 @@ public class SheetHandler extends DefaultHandler implements Sheet {
   }
   
   private void scanCellsEx(CellHandler handler) throws Exception {
-    PreparedStatement ps = connection.prepareStatement("select * from cells where sheet_id = ?"
-        + " order by sheet_id, n_row, n_col");
-    ps.setInt(1, sheetNo);
-    ResultSet rs = ps.executeQuery();
-    MyCell cell = new MyCell();
-    while (rs.next()) {
-      
-      cell.read(rs);
-      handler.handle(cell);
+    PreparedStatement ps = connection.prepareStatement(//
+        "select * from cells where sheet_id = ? order by sheet_id, n_row, n_col");
+    try {
+      ps.setInt(1, sheetNo);
+      ResultSet rs = ps.executeQuery();
+      try {
+        MyCell cell = new MyCell();
+        while (rs.next()) {
+          cell.read(rs);
+          handler.handle(cell);
+        }
+      } finally {
+        rs.close();
+      }
+    } finally {
+      ps.close();
     }
-    rs.close();
-    ps.close();
     connection.commit();
   }
   
@@ -300,13 +314,19 @@ public class SheetHandler extends DefaultHandler implements Sheet {
   
   private String getStrByNoEx(long strNo) throws SQLException {
     PreparedStatement ps = connection.prepareStatement("select value from strs where nom = ?");
-    ps.setLong(1, strNo);
-    ResultSet rs = ps.executeQuery();
-    String ret = null;
-    if (rs.next()) ret = rs.getString(1);
-    rs.close();
-    ps.close();
-    return ret;
+    try {
+      ps.setLong(1, strNo);
+      ResultSet rs = ps.executeQuery();
+      try {
+        String ret = null;
+        if (rs.next()) ret = rs.getString(1);
+        return ret;
+      } finally {
+        rs.close();
+      }
+    } finally {
+      ps.close();
+    }
   }
   
   @Override
@@ -326,20 +346,26 @@ public class SheetHandler extends DefaultHandler implements Sheet {
     PreparedStatement ps = connection
         .prepareStatement("select * from cells where sheet_id = ? and n_row = ?"
             + " order by sheet_id, n_row, n_col");
-    ps.setInt(1, sheetNo);
-    ps.setInt(2, row);
-    ResultSet rs = ps.executeQuery();
-    int lastCol = -1;
-    while (rs.next()) {
-      MyCell cell = new MyCell();
-      cell.read(rs);
-      while (++lastCol < cell.col) {
-        ret.add(new MyCell(row, lastCol));
+    try {
+      ps.setInt(1, sheetNo);
+      ps.setInt(2, row);
+      ResultSet rs = ps.executeQuery();
+      try {
+        int lastCol = -1;
+        while (rs.next()) {
+          MyCell cell = new MyCell();
+          cell.read(rs);
+          while (++lastCol < cell.col) {
+            ret.add(new MyCell(row, lastCol));
+          }
+          ret.add(cell);
+        }
+      } finally {
+        rs.close();
       }
-      ret.add(cell);
+    } finally {
+      ps.close();
     }
-    rs.close();
-    ps.close();
     connection.commit();
     return ret;
   }
@@ -369,42 +395,48 @@ public class SheetHandler extends DefaultHandler implements Sheet {
       cell.col = i;
       row.add(cell);
     }
-    PreparedStatement ps = connection.prepareStatement("select * from cells where sheet_id = ?"
-        + " order by sheet_id, n_row, n_col");
-    ps.setInt(1, sheetNo);
-    ResultSet rs = ps.executeQuery();
-    int currRowIndex = -1;
-    int currColIndex = 213213;
-    while (rs.next()) {
-      int colIndex = rs.getInt("n_col");
-      if (colIndex >= row.size()) continue;
-      int rowIndex = rs.getInt("n_row");
-      if (currRowIndex < rowIndex) {
-        currColIndex = -1;
-        if (currRowIndex > -1) {
-          handler.handle(row, currRowIndex);
-        }
-        for (Cell cell : row) {
-          cell.cleanData();
-        }
-        while (++currRowIndex < rowIndex) {
-          for (Cell cell : row) {
-            cell.row = currRowIndex;
+    PreparedStatement ps = connection.prepareStatement(//
+        "select * from cells where sheet_id = ? order by sheet_id, n_row, n_col");
+    try {
+      ps.setInt(1, sheetNo);
+      ResultSet rs = ps.executeQuery();
+      try {
+        int currRowIndex = -1;
+        int currColIndex = 213213;
+        while (rs.next()) {
+          int colIndex = rs.getInt("n_col");
+          if (colIndex >= row.size()) continue;
+          int rowIndex = rs.getInt("n_row");
+          if (currRowIndex < rowIndex) {
+            currColIndex = -1;
+            if (currRowIndex > -1) {
+              handler.handle(row, currRowIndex);
+            }
+            for (Cell cell : row) {
+              cell.cleanData();
+            }
+            while (++currRowIndex < rowIndex) {
+              for (Cell cell : row) {
+                cell.row = currRowIndex;
+              }
+              handler.handle(row, currRowIndex);
+            }
+            assert currRowIndex == rowIndex;
+            for (Cell cell : row) {
+              cell.row = rowIndex;
+            }
           }
-          handler.handle(row, currRowIndex);
+          while (++currColIndex < colIndex) {
+            row.get(currColIndex).cleanData();
+          }
+          ((MyCell)row.get(colIndex)).readData(rs);
         }
-        assert currRowIndex == rowIndex;
-        for (Cell cell : row) {
-          cell.row = rowIndex;
-        }
+        handler.handle(row, currRowIndex);
+      } finally {
+        rs.close();
       }
-      while (++currColIndex < colIndex) {
-        row.get(currColIndex).cleanData();
-      }
-      ((MyCell)row.get(colIndex)).readData(rs);
+    } finally {
+      ps.close();
     }
-    handler.handle(row, currRowIndex);
-    rs.close();
-    ps.close();
   }
 }

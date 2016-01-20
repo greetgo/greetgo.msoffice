@@ -5,7 +5,7 @@ apply plugin: 'maven'
 group = 'kz.greetgo'
 
 sourceCompatibility = 1.7
-version = '0.4.19'
+version = '0.4.20'
 
 def nowDate = new Date()
 def nowFormattedDate = nowDate.format("yyyy-MM-dd/HH:mm:ss")
@@ -66,11 +66,10 @@ repositories {
 configurations { repoUpload }
 
 dependencies {
-  testCompile 'org.testng:testng:6.1.1'
+  testCompile 'org.testng:testng:6.5.1'
   testCompile 'org.easytesting:fest-assert-core:2.0M10'
-
-  // needed for DAV protocol on maven uploads
-  repoUpload "org.apache.maven.wagon:wagon-webdav-jackrabbit:1.0-beta-6"
+  
+  testCompile 'org.apache.derby:derby:10.12.1.1'
 }
 
 test { useTestNG() }
