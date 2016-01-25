@@ -81,6 +81,12 @@ public class XlsxParser {
     if (connection != null) {
       connection.rollback();
       connection.close();
+      try {
+        connection = DriverManager.getConnection("jdbc:derby:" + workDir() + "/db;shutdown=true");
+      } catch (SQLException sqle) {
+        if (!"08006".equals(sqle.getSQLState())) throw sqle;
+      }
+      connection.close();
     }
     if (removeWorkDirOnClose) {
       UtilOffice.removeDir(workDir);
@@ -156,27 +162,23 @@ public class XlsxParser {
   private void prepareDB() throws Exception {
     Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
     connection = DriverManager.getConnection("jdbc:derby:" + workDir() + "/db;create=true");
-    connection.setAutoCommit(false);
     
     {
-      PreparedStatement ps = connection
-          .prepareStatement("create table strs (" + "nom bigint not null primary key, value clob)");
+      PreparedStatement ps = connection.prepareStatement("create table strs ("
+          + "nom bigint not null primary key, value clob)");
       ps.execute();
-      connection.commit();
       ps.close();
     }
     {
-      PreparedStatement ps = connection.prepareStatement(
-          UtilOffice.streamToStr(getClass().getResourceAsStream("create_table_SHEETS.sql")));
+      PreparedStatement ps = connection.prepareStatement(UtilOffice.streamToStr(getClass()
+          .getResourceAsStream("create_table_SHEETS.sql")));
       ps.execute();
-      connection.commit();
       ps.close();
     }
     {
-      PreparedStatement ps = connection.prepareStatement(
-          UtilOffice.streamToStr(getClass().getResourceAsStream("create_table_CELLS.sql")));
+      PreparedStatement ps = connection.prepareStatement(UtilOffice.streamToStr(getClass()
+          .getResourceAsStream("create_table_CELLS.sql")));
       ps.execute();
-      connection.commit();
       ps.close();
     }
   }
