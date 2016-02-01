@@ -1,15 +1,19 @@
 package kz.greetgo.msoffice.xlsx.gen;
 
+import static org.fest.assertions.api.Assertions.assertThat;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Date;
 
+import org.testng.annotations.Test;
+
 public class BrokenPipeError {
-  public static void main(String[] args) throws Exception {
-    String tmpDir = System.getProperty("user.home") + "/tmp";
-    String workDir = tmpDir + "/asdss";
-    workDir = "tmp/BrokenPipe";
+  
+  @Test
+  public void brokenPipe() throws Exception {
+    String workDir = "build/TestBrokenPipe";
     final String msg = "Broken pipe";
     
     try {
@@ -36,16 +40,18 @@ public class BrokenPipeError {
       }
     };
     
+    RuntimeException error = null;
+    
     try {
       f.complete(fout);
     } catch (RuntimeException ex) {
-      if (msg.equals(ex.getMessage())) {
-        File wd = new File(workDir);
-        if (wd.list() != null && wd.list().length > 0) throw ex;
-      }
+      error = ex;
     }
     
-    System.out.println("COMPLETE");
+    assertThat(error).isNotNull();
+    assertThat(error.getMessage()).isEqualTo("java.io.IOException: " + msg);
+    
+    assertThat(new File(workDir).list()).isNullOrEmpty();
   }
   
   private static void sheet1(Xlsx f) {
