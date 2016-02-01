@@ -129,9 +129,12 @@ public class Xlsx {
   }
   
   public void complete(OutputStream out) {
-    finish();
-    print(out);
-    close();
+    try {
+      finish();
+      print(out);
+    } finally {
+      close();
+    }
   }
   
   public Chart newChart(ChartType type, int relid) {
