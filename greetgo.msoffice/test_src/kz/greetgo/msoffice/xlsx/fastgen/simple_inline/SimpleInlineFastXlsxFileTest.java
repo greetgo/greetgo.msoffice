@@ -14,7 +14,7 @@ import kz.greetgo.msoffice.xlsx.parse.Sheet;
 import kz.greetgo.msoffice.xlsx.parse.XlsxParser;
 
 public class SimpleInlineFastXlsxFileTest {
-  @Test
+  @Test(groups = "long")
   public void createAndParseBigFile() throws Exception {
     final int count = 9000, page = 1000;
     

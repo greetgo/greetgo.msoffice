@@ -1,3 +1,7 @@
+plugins {
+  id 'org.ajoberstar.grgit' version '2.1.0'
+}
+apply plugin: 'org.ajoberstar.grgit'
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
@@ -10,29 +14,20 @@ version = '0.4.23'
 
 def nowDate = new Date()
 def nowFormattedDate = nowDate.format("yyyy-MM-dd/HH:mm:ss")
+def ggRepo = System.getenv('GG_REPO')
+def vendorName = "greetgo!"
 
 jar {
   manifest {
-    attributes 'Implementation-Title': project.name,
-      'Implementation-Version': version, 'Implementation-Vendor': 'greetgo!',
-      'Built-By': System.getProperty("user.name"), 'Built-At': nowFormattedDate
+    attributes(
+      'Specification-Title': project.name,
+      'Specification-Version': version,
+      'Specification-Vendor': vendorName,
+      'Implementation-Version': grgit.head().id,
+      'Created-By': System.getProperty("user.name"),
+      'Created-At': nowFormattedDate
+    )
   }
-}
-
-
-sourceSets {
-  main {
-    resources.srcDirs = ["src/main/java", "src/main/resources"]
-  }
-  test {
-    resources.srcDirs = ["src/test/java", "src/test/resources"]
-  }
-}
-compileJava {
-  options.encoding = "UTF-8"
-}
-compileTestJava {
-  options.encoding = "UTF-8"
 }
 
 eclipse {
@@ -58,10 +53,9 @@ project.eclipse.classpath.file.whenMerged { cp ->
 }
 
 repositories {
-  maven {
-    name 'Our repository'
-    url System.getenv('GG_REPO')
-  }
+  mavenLocal()
+  if (ggRepo?.trim()) maven { url ggRepo.trim() }
+  jcenter()
 }
 
 configurations { repoUpload }
@@ -90,18 +84,17 @@ artifacts {
   archives sourcesJar
 }
 
-sourceSets {
-  main {
-    resources.srcDirs = ["src/main/java", "src/main/resources"]
-  }
-}
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+
+sourceSets.main.java.srcDirs = ["src"]
+sourceSets.main.resources.srcDirs = ["src", "src_resources"]
+sourceSets.test.java.srcDirs = ["test_src"]
+sourceSets.test.resources.srcDirs = ["test_src", "test_resources"]
 
 uploadArchives {
   repositories.mavenDeployer {
     configuration = configurations.archives
-    repository(
-      url: System.getenv('GG_REPO')
-    )
+    repository(url: ggRepo)
 
     pom.project {
       name project.name

@@ -23,8 +23,8 @@ public class SimpleXlsxFileTest {
     
     x.complete(new FileOutputStream("build/dsa1.xlsx"));
   }
-  
-  @Test
+
+  @Test(groups = "long")
   public void test2() throws Exception {
     SimpleFastXlsxFile x = new SimpleFastXlsxFile("build/tmp");
     

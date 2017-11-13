@@ -11,3 +11,6 @@
 /war
 /*.log
 /tmp/
+*.iml
+*.ipr
+*.iws
