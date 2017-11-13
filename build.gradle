@@ -156,8 +156,8 @@ project.tasks.create('uploadToMavenCentral', Upload.class) {
         url 'http://tech.greetgo.kz/libs/greetgo/msoffice.php'
 
         scm {
-          connection 'scm:git:https://github.com/greetgo/mvc'
-          developerConnection 'scm:git:https://github.com/greetgo/msoffice'
+          connection 'scm:git:https://github.com/greetgo/greetgo.msoffice'
+          developerConnection 'scm:git:https://github.com/greetgo/greetgo.msoffice'
           url 'https://github.com/greetgo/greetgo.msoffice'
         }
 
