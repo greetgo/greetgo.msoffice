@@ -25,7 +25,7 @@ import kz.greetgo.msoffice.UtilOffice;
  * Пример использования:
  * </p>
  * <p>
- * <code><pre>
+ * <code>
  * XlsxParser p = new XlsxParser();
  * p.load(inputStreamOfXlsxFileContent);
  * 
@@ -35,7 +35,7 @@ import kz.greetgo.msoffice.UtilOffice;
  * 
  * //Необходимо обязательно закрывать парсер
  * p.close();
- * </pre></code>
+ * </code>
  * </p>
  * 
  * @author pompei

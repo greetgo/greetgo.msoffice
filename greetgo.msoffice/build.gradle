@@ -47,7 +47,7 @@ project.eclipse.classpath.file.whenMerged { cp ->
     cp.entries.findAll { it.path.contains('JRE_CONTAINER') }.each {
 
       it.path += "/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/" +
-          "JavaSE-$project.sourceCompatibility"
+        "JavaSE-$project.sourceCompatibility"
     }
   }
 }
@@ -63,11 +63,14 @@ configurations { repoUpload }
 dependencies {
   testCompile 'org.testng:testng:6.5.1'
   testCompile 'org.easytesting:fest-assert-core:2.0M10'
-  
+
   testCompile 'org.apache.derby:derby:10.12.1.1'
 }
 
-test { useTestNG() }
+test {
+  useTestNG()
+  test { options.suites("test_resources/tests.xml") }
+}
 
 task javadocJar(type: Jar, dependsOn: 'javadoc') {
   from javadoc.destinationDir

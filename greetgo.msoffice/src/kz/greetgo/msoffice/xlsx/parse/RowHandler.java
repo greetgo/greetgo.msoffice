@@ -4,17 +4,16 @@ import java.util.List;
 
 /**
  * Обрабочик сканирования строк
- * 
+ *
  * @author pompei
  */
 public interface RowHandler {
   /**
    * Вызывается при появлении очередной строки
-   * 
-   * @param row
-   *          список ячеек очередной строки
-   * @param rowIndex
-   *          индекс очередной строки: 0 - первая строка, 1 - вторая, и т.д.
+   *
+   * @param row      список ячеек очередной строки
+   * @param rowIndex индекс очередной строки: 0 - первая строка, 1 - вторая, и т.д.
+   * @throws Exception чтобы не ставить try/catch блоки
    */
   void handle(List<Cell> row, int rowIndex) throws Exception;
 }
