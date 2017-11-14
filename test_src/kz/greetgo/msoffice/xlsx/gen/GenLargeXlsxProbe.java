@@ -4,10 +4,10 @@ import java.io.FileOutputStream;
 
 public class GenLargeXlsxProbe {
   public static void main(String[] args) throws Exception {
-    int rowCount = 900000;
+    int rowCount = 9000;
     
     String tmpDir = System.getProperty("user.home") + "/trans/tmp";
-    String workDir = tmpDir + "/asdss_" + rowCount;
+    String workDir = tmpDir + "/generated_xlsx_" + rowCount;
     
     try {
       Runtime.getRuntime().exec("rm -rvf " + workDir).waitFor();
@@ -30,7 +30,7 @@ public class GenLargeXlsxProbe {
       sheet.style().alignment().horizontalCenter();
       for (int i = 0; i < 20; i++) {
         if (i == 10) sheet.style().alignment().clean();
-        sheet.cellStr(2 + i, "dfsgfd g" + i + "_" + row + " of " + rowCount);
+        sheet.cellStr(2 + i, "Ячейка Ы" + i + "_" + row + " of " + rowCount);
       }
       
       sheet.row().finish();
@@ -42,11 +42,11 @@ public class GenLargeXlsxProbe {
     
     System.out.println("Time to form of " + rowCount + " is " + (time2 - time1) / 1000.0 + " c");
     
-    FileOutputStream fout = new FileOutputStream(tmpDir + "/asd_" + rowCount + ".xlsx");
+    FileOutputStream fOut = new FileOutputStream(tmpDir + "/generated_" + rowCount + ".xlsx");
     
-    f.print(fout);
+    f.print(fOut);
     
-    fout.close();
+    fOut.close();
     
     long time3 = System.currentTimeMillis();
     
