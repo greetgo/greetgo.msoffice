@@ -10,7 +10,7 @@ public class GenLargeXlsxProbe {
     String workDir = tmpDir + "/generated_xlsx_" + rowCount;
     
     try {
-      Runtime.getRuntime().exec("rm -rvf " + workDir).waitFor();
+      Runtime.getRuntime().exec(/*wmd*/"rm -rvf " + workDir).waitFor();
     } catch (Exception e) {
       e.printStackTrace();
     }

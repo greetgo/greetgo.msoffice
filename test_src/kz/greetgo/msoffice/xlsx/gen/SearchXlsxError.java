@@ -3,36 +3,35 @@ package kz.greetgo.msoffice.xlsx.gen;
 import java.io.FileOutputStream;
 import java.util.Date;
 
-public class SerachXlsxError {
+public class SearchXlsxError {
   public static void main(String[] args) throws Exception {
     String tmpDir = System.getProperty("user.home") + "/tmp";
-    String workDir = tmpDir + "/asdss";
-    workDir = "tmp/Search";
-    
+    String workDir = tmpDir + "/Search";
+
     try {
-      Runtime.getRuntime().exec("rm -rvf " + workDir).waitFor();
+      Runtime.getRuntime().exec(/*wmd*/"rm -rvf " + workDir).waitFor();
     } catch (Exception e) {
       e.printStackTrace();
     }
-    
+
     Xlsx f = new Xlsx();
     f.setWorkDir(workDir);
-    
+
     sheet1(f);
     sheet2(f);
     sheet3(f);
-    
+
     f.finish();
-    
-    FileOutputStream fout = new FileOutputStream("tmp/asd_Search.xlsx");
-    
-    f.print(fout);
-    
-    fout.close();
-    
+
+    FileOutputStream fOut = new FileOutputStream("tmp/asd_Search.xlsx");
+
+    f.print(fOut);
+
+    fOut.close();
+
     System.out.println("COMPLETE");
   }
-  
+
   private static void sheet1(Xlsx f) {
     Sheet sheet = f.newSheet(true);
     {
@@ -41,14 +40,14 @@ public class SerachXlsxError {
       sheet.row().finish();
     }
   }
-  
+
   private static void sheet2(Xlsx f) {
     Sheet s = f.newSheet(false);
-    
+
     s.setDisplayName("Перестановки кубика Рубика");
-    
+
     s.setWidth(2, 50);
-    
+
     s.skipRows(3);
     {
       s.style().clean();
@@ -56,7 +55,7 @@ public class SerachXlsxError {
       s.style().alignment().horizontalCenter();
       s.style().alignment().verticalCenter();
       s.style().borders().bottom().setStyle(BorderStyle.slantDashDot);
-      
+
       s.row().start();
       s.cellStr(1, "ddd");
       s.cellInt(2, 200);
@@ -69,7 +68,7 @@ public class SerachXlsxError {
       s.row().finish();
     }
   }
-  
+
   private static void sheet3(Xlsx f) {
     Sheet sheet = f.newSheet(false);
     {

@@ -2,5 +2,10 @@
 
 Generates and reads .xlsx and .docx files
 
- - [Generate docx-file](docs/generate_docx.md)
- - [Generate big xlsx-file](test_src/kz/greetgo/msoffice/xlsx/gen/GenLargeXlsxProbe.java)
+ - [Generate docx-file](test_src/kz/greetgo/msoffice/docx/gen/ProbeGenDocx.java)
+   - [Generate docx-file with picture](test_src/kz/greetgo/msoffice/docx/gen/ProbeGenDocxImage.java)
+   - [Generate docx-file with many pages](test_src/kz/greetgo/msoffice/docx/gen/ProbeGenManyPagesDocx.java)
+ - [Generate xlsx-file](test_src/kz/greetgo/msoffice/xlsx/gen/GenXlsxProbe.java)
+   - [Generate big xlsx-file](test_src/kz/greetgo/msoffice/xlsx/gen/GenLargeXlsxProbe.java)
+   - [Fast generation #1 of big xlsx-file](test_src/kz/greetgo/msoffice/xlsx/fastgen/simple/SimpleXlsxFileTest.java)
+   - [Fast generation #2 of big xlsx-file](test_src/kz/greetgo/msoffice/xlsx/fastgen/simple_inline/SimpleInlineFastXlsxFileTest.java)
