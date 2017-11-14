@@ -9,3 +9,4 @@ Generates and reads .xlsx and .docx files
    - [Generate big xlsx-file](test_src/kz/greetgo/msoffice/xlsx/gen/GenLargeXlsxProbe.java)
    - [Fast generation #1 of big xlsx-file](test_src/kz/greetgo/msoffice/xlsx/fastgen/simple/SimpleXlsxFileTest.java)
    - [Fast generation #2 of big xlsx-file](test_src/kz/greetgo/msoffice/xlsx/fastgen/simple_inline/SimpleInlineFastXlsxFileTest.java)
+ - [Parse xlsx-file](test_src/kz/greetgo/msoffice/xlsx/fastgen/simple_inline/SimpleInlineFastXlsxFileTest.java) - see P A R S I N G
