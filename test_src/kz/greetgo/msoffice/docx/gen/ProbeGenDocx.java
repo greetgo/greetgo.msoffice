@@ -1,5 +1,6 @@
 package kz.greetgo.msoffice.docx.gen;
 
+import kz.greetgo.msoffice.PageOrientation;
 import kz.greetgo.msoffice.docx.Align;
 import kz.greetgo.msoffice.docx.Document;
 import kz.greetgo.msoffice.docx.Docx;
@@ -16,6 +17,7 @@ public class ProbeGenDocx {
   public static void main(String[] args) {
     Docx docx = new Docx();
     
+    docx.getDocument().setPageOrientation(PageOrientation.LANDSCAPE);
     docx.getDocument().setLeft(2000);
     docx.getDocument().setRight(2000);
     
