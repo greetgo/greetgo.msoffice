@@ -1,4 +1,4 @@
-package kz.greetgo.msoffice.xlsx.parse2;
+package kz.greetgo.msoffice.xlsx.xlsx_reader;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -11,15 +11,11 @@ public class StoredStrings implements AutoCloseable {
 
   private final Path refPath;
   private final Path contentPath;
-  private final int cutSize;
-  private final int maxSize;
   private final RandomAccessFile ref, content;
 
-  public StoredStrings(Path refPath, Path contentPath, int cutSize, int maxSize) {
+  public StoredStrings(Path refPath, Path contentPath) {
     this.refPath = refPath;
     this.contentPath = contentPath;
-    this.cutSize = cutSize;
-    this.maxSize = maxSize;
     try {
       ref = new RandomAccessFile(refPath.toFile(), "rw");
       content = new RandomAccessFile(contentPath.toFile(), "rw");

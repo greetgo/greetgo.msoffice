@@ -1,4 +1,4 @@
-package kz.greetgo.msoffice.xlsx.parse2;
+package kz.greetgo.msoffice.xlsx.xlsx_reader;
 
 import kz.greetgo.msoffice.test.RND;
 import org.testng.annotations.Test;
@@ -34,7 +34,7 @@ public class StoredStringsTest {
     Path refFile = dir.resolve("ref" + abs(RND.rnd.nextLong()));
     Path contentFile = dir.resolve("content" + abs(RND.rnd.nextLong()));
 
-    try (StoredStrings ss = new StoredStrings(refFile, contentFile, 10, 15)) {
+    try (StoredStrings ss = new StoredStrings(refFile, contentFile)) {
       {
         long t1 = System.currentTimeMillis();
         long i = 0;

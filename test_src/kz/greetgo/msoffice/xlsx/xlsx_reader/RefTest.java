@@ -1,4 +1,4 @@
-package kz.greetgo.msoffice.xlsx.parse2;
+package kz.greetgo.msoffice.xlsx.xlsx_reader;
 
 import kz.greetgo.msoffice.test.RND;
 import org.testng.annotations.Test;

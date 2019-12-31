@@ -327,6 +327,11 @@ public class UtilOffice {
       public int read() throws IOException {
         return in.read();
       }
+
+      @Override
+      public int read(byte[] b, int off, int len) throws IOException {
+        return in.read(b, off, len);
+      }
     };
   }
 
@@ -527,5 +532,10 @@ public class UtilOffice {
     in.close();
 
     zOut.closeEntry();
+  }
+
+  public static Integer strToInt(String str) {
+    if (str == null) return null;
+    return Integer.valueOf(str);
   }
 }
