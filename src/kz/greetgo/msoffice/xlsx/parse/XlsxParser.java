@@ -1,5 +1,9 @@
 package kz.greetgo.msoffice.xlsx.parse;
 
+import kz.greetgo.msoffice.UtilOffice;
+
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 import java.io.File;
 import java.io.InputStream;
 import java.sql.Connection;
@@ -12,11 +16,6 @@ import java.util.Random;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-
-import kz.greetgo.msoffice.UtilOffice;
-
 /**
  * <p>
  * Основной файл для парсинга xlsx-файлов
@@ -28,25 +27,25 @@ import kz.greetgo.msoffice.UtilOffice;
  * <code>
  * XlsxParser p = new XlsxParser();
  * p.load(inputStreamOfXlsxFileContent);
- * 
+ * <p>
  * p.loadRow();
  * p.scanCells();
  * p.scanRows();
- * 
+ * <p>
  * //Необходимо обязательно закрывать парсер
  * p.close();
  * </code>
  * </p>
- * 
+ *
  * @author pompei
  */
 public class XlsxParser {
   private String tmpDirBase = System.getProperty("java.io.tmpdir", ".");
   private SAXParser saxParser;
   public boolean removeWorkDirOnClose = true;
-  
+
   private final List<Sheet> sheets = new ArrayList<Sheet>();
-  
+
   private SAXParser saxParser() throws Exception {
     if (saxParser == null) {
       SAXParserFactory fact = SAXParserFactory.newInstance();
@@ -54,28 +53,28 @@ public class XlsxParser {
     }
     return saxParser;
   }
-  
+
   public void setTmpDirBase(String tmpDirBase) {
     if (workDir != null) {
       throw new IllegalStateException("Cannot change this property on active parser. "
-          + "Call method 'close' to deactivate this parser");
+        + "Call method 'close' to deactivate this parser");
     }
     this.tmpDirBase = tmpDirBase;
   }
-  
+
   private String workDir = null;
   private Connection connection;
-  
+
   private String workDir() {
     if (workDir == null) {
-      String newName = "xlsxParser-" + System.currentTimeMillis() + "-" + new Random().nextLong();
+      String newName = "xlsxParser-" + System.currentTimeMillis() + '-' + new Random().nextLong();
       //newName = newName.replaceAll("-", "");
-      workDir = tmpDirBase + "/" + newName;
+      workDir = tmpDirBase + '/' + newName;
       new File(workDir).mkdirs();
     }
     return workDir;
   }
-  
+
   public void closeEx() throws Exception {
     if (workDir == null) return;
     if (connection != null) {
@@ -83,8 +82,8 @@ public class XlsxParser {
       connection.close();
       try {
         connection = DriverManager.getConnection("jdbc:derby:" + workDir() + "/db;shutdown=true");
-      } catch (SQLException sqle) {
-        if (!"08006".equals(sqle.getSQLState())) throw sqle;
+      } catch (SQLException sqlError) {
+        if (!"08006".equals(sqlError.getSQLState())) throw sqlError;
       }
       connection.close();
     }
@@ -93,47 +92,47 @@ public class XlsxParser {
     }
     workDir = null;
   }
-  
+
   public void close() {
     try {
       closeEx();
     } catch (Exception e) {
       if (e instanceof RuntimeException) {
-        throw (RuntimeException)e;
+        throw (RuntimeException) e;
       }
       throw new RuntimeException(e);
     }
   }
-  
+
   public void load(InputStream in) {
     try {
       loadEx(in);
     } catch (Exception e) {
-      
+
       if (connection != null) {
         try {
           connection.close();
-        } catch (SQLException e1) {}
+        } catch (SQLException ignore) {}
         connection = null;
       }
-      
+
       if (e instanceof RuntimeException) {
-        throw (RuntimeException)e;
+        throw (RuntimeException) e;
       }
       throw new RuntimeException(e);
     }
   }
-  
+
   public void loadEx(InputStream in) throws Exception {
     prepareDB();
-    
+
     final ZipInputStream zin;
     if (in instanceof ZipInputStream) {
-      zin = (ZipInputStream)in;
+      zin = (ZipInputStream) in;
     } else {
       zin = new ZipInputStream(in);
     }
-    
+
     ZipEntry entry;
     int sheetNo = 1;
     while ((entry = zin.getNextEntry()) != null) {
@@ -155,38 +154,38 @@ public class XlsxParser {
       }
       zin.closeEntry();
     }
-    
+
     zin.close();
   }
-  
+
   private void prepareDB() throws Exception {
     Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
     connection = DriverManager.getConnection("jdbc:derby:" + workDir() + "/db;create=true");
-    
+
     {
-      PreparedStatement ps = connection.prepareStatement("create table strs ("
-          + "nom bigint not null primary key, value clob)");
+      PreparedStatement ps = connection.prepareStatement(
+        "create table strs (nom bigint not null primary key, value clob)");
       ps.execute();
       ps.close();
     }
     {
       PreparedStatement ps = connection.prepareStatement(UtilOffice.streamToStr(getClass()
-          .getResourceAsStream("create_table_SHEETS.sql")));
+        .getResourceAsStream("create_table_SHEETS.sql")));
       ps.execute();
       ps.close();
     }
     {
       PreparedStatement ps = connection.prepareStatement(UtilOffice.streamToStr(getClass()
-          .getResourceAsStream("create_table_CELLS.sql")));
+        .getResourceAsStream("create_table_CELLS.sql")));
       ps.execute();
       ps.close();
     }
   }
-  
+
   public List<Sheet> sheets() {
     return sheets;
   }
-  
+
   public Sheet activeSheet() {
     for (Sheet sheet : sheets) {
       if (sheet.isActive()) return sheet;

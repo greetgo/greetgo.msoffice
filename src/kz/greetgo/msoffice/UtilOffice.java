@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -22,6 +23,7 @@ public class UtilOffice {
   /**
    * Стандартное представление даты и времени по w3c
    */
+  @SuppressWarnings("SpellCheckingInspection")
   public static final SimpleDateFormat W3CDTF = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
   /**
@@ -35,6 +37,7 @@ public class UtilOffice {
    * @param date исходная дата
    * @return строка даты в формате W3CDTF, или пустая строка если на вход пришел null
    */
+  @SuppressWarnings("SpellCheckingInspection")
   public static String toW3CDTF(Date date) {
     if (date == null) return null;
     return W3CDTF.format(date);
@@ -46,6 +49,7 @@ public class UtilOffice {
    * @param str строка содержащая дату в формате W3CDTF
    * @return дата или null, если str == null
    */
+  @SuppressWarnings("SpellCheckingInspection")
   public static Date parseW3CDTF(String str) {
     if (str == null) return null;
     try {
@@ -63,11 +67,12 @@ public class UtilOffice {
    * @return результирующая строка
    */
   public static String toLenZero(int len, String s) {
-    if (s == null) s = "";
-    while (len > s.length()) {
-      s = "0" + s;
+    StringBuilder sb = new StringBuilder();
+    if (s != null) sb.append(s);
+    while (len > sb.length()) {
+      sb.insert(0, ' ');
     }
-    return s;
+    return sb.toString();
   }
 
   /**
@@ -92,7 +97,7 @@ public class UtilOffice {
   }
 
   public static void appendToSB0(InputStream in, StringBuilder sb) throws Exception {
-    BufferedReader br = new BufferedReader(new InputStreamReader(in, "UTF-8"));
+    BufferedReader br = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
     String line;
     while ((line = br.readLine()) != null) {
       sb.append(line);
@@ -113,6 +118,7 @@ public class UtilOffice {
     return sb.toString();
   }
 
+  @SuppressWarnings("unused")
   public static String streamToStr0(InputStream in) throws Exception {
     StringBuilder sb = new StringBuilder();
     appendToSB0(in, sb);
@@ -121,7 +127,7 @@ public class UtilOffice {
 
   public static void copyStreams(InputStream in, OutputStream out, int bufferSize)
     throws IOException {
-    byte buffer[] = new byte[bufferSize];
+    byte[] buffer = new byte[bufferSize];
     int readBytes;
     while ((readBytes = in.read(buffer)) != -1) {
       out.write(buffer, 0, readBytes);
@@ -194,11 +200,12 @@ public class UtilOffice {
    * @return признак произведения операции: если файловая система не изменилась, то возвращается
    * лож; если же хоть что-то удалилось, то возвращается истина
    */
+  @SuppressWarnings("UnusedReturnValue")
   public static boolean cleanDir(String dir) {
-    String[] subnames = new File(dir).list();
-    if (subnames == null) return false;
+    String[] subNames = new File(dir).list();
+    if (subNames == null) return false;
     boolean ret = false;
-    for (String name : subnames) {
+    for (String name : subNames) {
       if (".".equals(name)) continue;
       if ("..".equals(name)) continue;
       File f = new File(dir + System.getProperty("file.separator") + name);
@@ -219,7 +226,7 @@ public class UtilOffice {
     return ret;
   }
 
-  private static final String LETTER_BASE[] = new String[]{"A", "B", "C", "D", "E", "F", "G",
+  private static final String[] LETTER_BASE = new String[]{"A", "B", "C", "D", "E", "F", "G",
     "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
 
   /**
@@ -275,33 +282,32 @@ public class UtilOffice {
   /**
    * Парсит представление координат ячейки.
    *
-   * @param coord Строка с координатой: символьное обозначение столбца и номер строки ("B6", "C8",
-   *              "AB12").
+   * @param coordinate Строка с координатой: символьное обозначение столбца и номер строки ("B6", "C8", "AB12").
    * @return [ col, row ], нумерация с 1
    */
-  public static int[] parseCellCoord(String coord) {
-    if (coord == null) throw new NullPointerException("Координата не должна быть пустой");
-    coord = coord.trim();
-    if (coord.length() < 1) throw new IllegalArgumentException("Координата не должна быть пустой");
+  public static int[] parseCellCoordinate(String coordinate) {
+    if (coordinate == null) throw new NullPointerException("Координата не должна быть пустой");
+    coordinate = coordinate.trim();
+    if (coordinate.length() < 1) throw new IllegalArgumentException("Координата не должна быть пустой");
 
-    int[] coordint = new int[2];
+    int[] coordinateInt = new int[2];
 
-    coord = coord.toUpperCase();
+    coordinate = coordinate.toUpperCase();
 
     int i = 0;
-    while (i < coord.length()) {
-      if (Character.isDigit(coord.charAt(i))) break;
+    while (i < coordinate.length()) {
+      if (Character.isDigit(coordinate.charAt(i))) break;
       i++;
     }
 
-    String col = coord.substring(0, i);
+    String col = coordinate.substring(0, i);
     String row = "0";
-    if (i < coord.length()) row = coord.substring(i);
+    if (i < coordinate.length()) row = coordinate.substring(i);
 
-    coordint[0] = parseLettersNumber(col) + 1;
-    coordint[1] = Integer.parseInt(row);
+    coordinateInt[0] = parseLettersNumber(col) + 1;
+    coordinateInt[1] = Integer.parseInt(row);
 
-    return coordint;
+    return coordinateInt;
   }
 
   /**
@@ -336,7 +342,7 @@ public class UtilOffice {
    */
   private static final int EXCEL_DATE_MAGIC = 70 * 365 + 50;
 
-  public static final Calendar epochStart() {
+  public static Calendar epochStart() {
     Calendar c = new GregorianCalendar();
     c.set(Calendar.YEAR, 1970);
     c.set(Calendar.MONTH, 1);
@@ -360,8 +366,7 @@ public class UtilOffice {
 
     BigDecimal value = new BigDecimal(excelValue);
 
-    c.add(Calendar.DAY_OF_YEAR, value.setScale(0, BigDecimal.ROUND_DOWN).intValueExact()
-      - EXCEL_DATE_MAGIC);
+    c.add(Calendar.DAY_OF_YEAR, value.setScale(0, BigDecimal.ROUND_DOWN).intValueExact() - EXCEL_DATE_MAGIC);
 
     BigDecimal afterZero = value.subtract(value.setScale(0, BigDecimal.ROUND_DOWN));
 
@@ -481,45 +486,46 @@ public class UtilOffice {
    * @throws Exception утобы не делать try/catch-блок
    */
   public static void zipDirEx(String dir, OutputStream out) throws Exception {
-    final ZipOutputStream zout;
+    final ZipOutputStream zOut;
     if (out instanceof ZipOutputStream) {
-      zout = (ZipOutputStream) out;
+      zOut = (ZipOutputStream) out;
     } else {
-      zout = new ZipOutputStream(out);
+      zOut = new ZipOutputStream(out);
     }
 
-    appendDir(dir, "", zout);
+    appendDir(dir, "", zOut);
 
-    zout.close();
+    zOut.close();
   }
 
-  private static void appendDir(String dir, String localPath, ZipOutputStream zout)
+  private static void appendDir(String dir, String localPath, ZipOutputStream zOut)
     throws Exception {
-    for (String localName : new File(dir).list()) {
+    String[] list = new File(dir).list();
+    if (list != null) for (String localName : list) {
       String fullName = dir + "/" + localName;
       String localFullName = localName;
       if (localPath.length() > 0) {
         localFullName = localPath + "/" + localName;
       }
       if (new File(fullName).isDirectory()) {
-        appendDir(fullName, localFullName, zout);
+        appendDir(fullName, localFullName, zOut);
       } else {
-        appendFile(fullName, localFullName, zout);
+        appendFile(fullName, localFullName, zOut);
       }
     }
   }
 
-  private static void appendFile(String fullName, String localFullName, ZipOutputStream zout)
+  private static void appendFile(String fullName, String localFullName, ZipOutputStream zOut)
     throws Exception {
 
-    zout.putNextEntry(new ZipEntry(localFullName));
+    zOut.putNextEntry(new ZipEntry(localFullName));
 
     FileInputStream in = new FileInputStream(fullName);
 
-    UtilOffice.copyStreams(in, zout);
+    UtilOffice.copyStreams(in, zOut);
 
     in.close();
 
-    zout.closeEntry();
+    zOut.closeEntry();
   }
 }

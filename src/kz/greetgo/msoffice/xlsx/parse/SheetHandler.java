@@ -1,5 +1,10 @@
 package kz.greetgo.msoffice.xlsx.parse;
 
+import kz.greetgo.msoffice.UtilOffice;
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
+
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -9,30 +14,23 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
-
-import kz.greetgo.msoffice.UtilOffice;
-
 public class SheetHandler extends DefaultHandler implements Sheet {
   private final Connection connection;
   private final int sheetNo;
   private final String name;
   private boolean active;
-  
+
   public SheetHandler(Connection connection, String sheetPathName, int sheetNo) {
     this.connection = connection;
     this.sheetNo = sheetNo;
-    
+
     {
       int startLen = "xl/worksheets/".length();
       int endLen = ".xml".length();
       name = sheetPathName.substring(startLen, sheetPathName.length() - endLen);
-      
+
       try {
-        PreparedStatement ps = connection
-            .prepareStatement("insert into sheets (id, name) values (?, ?)");
+        PreparedStatement ps = connection.prepareStatement("insert into sheets (id, name) values (?, ?)");
         try {
           ps.setInt(1, sheetNo);
           ps.setString(2, name);
@@ -46,29 +44,29 @@ public class SheetHandler extends DefaultHandler implements Sheet {
       }
     }
   }
-  
+
   private final XmlIn in = new XmlIn();
-  
+
   PreparedStatement cellsInsertPS = null;
   private int currentBachSize = 0;
   private static final int MAX_BATCH_SIZE = 2000;
-  
+
   @Override
   public void startDocument() throws SAXException {
     try {
-      cellsInsertPS = connection.prepareStatement(
-          "insert into cells (sheet_id, n_row, n_col, t, s, v)" + " values (?, ?, ?, ?, ?, ?)");
+      cellsInsertPS = connection
+        .prepareStatement("insert into cells (sheet_id, n_row, n_col, t, s, v) values (?, ?, ?, ?, ?, ?)");
       currentBachSize = 0;
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }
   }
-  
+
   @Override
   public void endDocument() throws SAXException {
     finishInsertion();
   }
-  
+
   public void finishInsertion() {
     if (cellsInsertPS == null) return;
     try {
@@ -81,13 +79,12 @@ public class SheetHandler extends DefaultHandler implements Sheet {
       throw new RuntimeException(e);
     }
   }
-  
+
   @Override
-  public void startElement(String uri, String localName, String qName, Attributes attributes)
-      throws SAXException {
+  public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
     textBuilder = null;
     in.stepIn(qName);
-    
+
     if ("worksheet/sheetData/row/c".equals(in.current())) {
       cell.r = attributes.getValue("r");
       cell.t = attributes.getValue("t");
@@ -99,13 +96,13 @@ public class SheetHandler extends DefaultHandler implements Sheet {
       }
     }
   }
-  
+
   private static class CellInfo {
     String r, t, s, v;
-    
+
     long row;
     int col;
-    
+
     public void calcRowCol() {
       int index = 0;
       while (true) {
@@ -120,9 +117,9 @@ public class SheetHandler extends DefaultHandler implements Sheet {
       }
     }
   }
-  
+
   final CellInfo cell = new CellInfo();
-  
+
   @Override
   public void endElement(String uri, String localName, String qName) throws SAXException {
     if ("worksheet/sheetData/row/c/v".equals(in.current())) {
@@ -131,20 +128,20 @@ public class SheetHandler extends DefaultHandler implements Sheet {
     }
     in.stepOut();
   }
-  
+
   private StringBuilder textBuilder = null;
-  
+
   private String text() {
     if (textBuilder == null) return "";
     return textBuilder.toString();
   }
-  
+
   @Override
   public void characters(char[] ch, int start, int length) throws SAXException {
     if (textBuilder == null) textBuilder = new StringBuilder();
     textBuilder.append(ch, start, length);
   }
-  
+
   private void appendCell(CellInfo cell) {
     try {
       appendCellEx(cell);
@@ -152,7 +149,7 @@ public class SheetHandler extends DefaultHandler implements Sheet {
       throw new RuntimeException(e);
     }
   }
-  
+
   private void appendCellEx(CellInfo cell) throws SQLException {
     cell.calcRowCol();
     {
@@ -169,120 +166,116 @@ public class SheetHandler extends DefaultHandler implements Sheet {
       commit();
     }
   }
-  
+
   private void commit() throws SQLException {
     cellsInsertPS.executeBatch();
     connection.commit();
     currentBachSize = 0;
   }
-  
+
   private void setSheetIsActive(boolean active) {
     try {
       setSheetIsActiveEx(active);
     } catch (Exception e) {
       if (e instanceof RuntimeException) {
-        throw (RuntimeException)e;
+        throw (RuntimeException) e;
       }
       throw new RuntimeException(e);
     }
   }
-  
+
   private void setSheetIsActiveEx(boolean active) throws Exception {
-    PreparedStatement ps = connection
-        .prepareStatement("update sheets set is_active = ? where id = ?");
-    try {
-      ps.setInt(1, active ? 1 :0);
+    try (PreparedStatement ps = connection.prepareStatement("update sheets set is_active = ? where id = ?")) {
+      ps.setInt(1, active ? 1 : 0);
       ps.setLong(2, sheetNo);
       ps.executeUpdate();
       connection.commit();
-    } finally {
-      ps.close();
     }
     this.active = active;
   }
-  
+
   @Override
   public String name() {
     return name;
   }
-  
+
   @Override
   public String toString() {
     return name();
   }
-  
+
   @Override
   public boolean isActive() {
     return active;
   }
-  
+
   private class MyCell extends Cell {
     MyCell() {}
-    
+
     MyCell(int row, int col) {
       this.row = row;
       this.col = col;
     }
-    
+
     @Override
     public String asStr() {
       if (isStr()) return getStrByNo(Long.parseLong(v));
       return v;
     }
-    
+
     @Override
     public Date asDate() {
       if (isStr()) return null;
       return UtilOffice.excelToDate(v);
     }
-    
+
     @Override
     public Integer asInt() {
       BigDecimal bd = asBigDecimal();
-      return bd == null ? null :bd.intValue();
+      return bd == null ? null : bd.intValue();
     }
-    
+
     @Override
     public Long asLong() {
       BigDecimal bd = asBigDecimal();
-      return bd == null ? null :bd.longValue();
+      return bd == null ? null : bd.longValue();
     }
-    
+
     @Override
     public BigDecimal asBigDecimal() {
       if (isStr()) return null;
       if (v == null) return null;
       return new BigDecimal(v);
     }
-    
+
     public void read(ResultSet rs) throws SQLException {
       row = rs.getInt("n_row");
       col = rs.getInt("n_col");
       readData(rs);
     }
-    
+
     public void readData(ResultSet rs) throws SQLException {
       s = rs.getString("s");
       t = rs.getString("t");
       v = rs.getString("v");
     }
   }
-  
+
   @Override
   public void scanCells(CellHandler handler) {
     try {
       scanCellsEx(handler);
     } catch (Exception e) {
       if (e instanceof RuntimeException) {
-        throw (RuntimeException)e;
+        throw (RuntimeException) e;
       }
       throw new RuntimeException(e);
     }
   }
-  
+
   private void scanCellsEx(CellHandler handler) throws Exception {
     PreparedStatement ps = connection.prepareStatement(//
-        "select * from cells where sheet_id = ? order by sheet_id, n_row, n_col");
+      "select * from cells where sheet_id = ? order by sheet_id, n_row, n_col");
     try {
       ps.setInt(1, sheetNo);
       ResultSet rs = ps.executeQuery();
@@ -300,18 +293,18 @@ public class SheetHandler extends DefaultHandler implements Sheet {
     }
     connection.commit();
   }
-  
+
   private String getStrByNo(long strNo) {
     try {
       return getStrByNoEx(strNo);
     } catch (Exception e) {
       if (e instanceof RuntimeException) {
-        throw (RuntimeException)e;
+        throw (RuntimeException) e;
       }
       throw new RuntimeException(e);
     }
   }
-  
+
   private String getStrByNoEx(long strNo) throws SQLException {
     PreparedStatement ps = connection.prepareStatement("select value from strs where nom = ?");
     try {
@@ -328,24 +321,24 @@ public class SheetHandler extends DefaultHandler implements Sheet {
       ps.close();
     }
   }
-  
+
   @Override
   public List<Cell> loadRow(int row) {
     try {
       return loadRowEx(row);
     } catch (Exception e) {
       if (e instanceof RuntimeException) {
-        throw (RuntimeException)e;
+        throw (RuntimeException) e;
       }
       throw new RuntimeException(e);
     }
   }
-  
+
   private List<Cell> loadRowEx(int row) throws SQLException {
     List<Cell> ret = new ArrayList<Cell>();
     PreparedStatement ps = connection
-        .prepareStatement("select * from cells where sheet_id = ? and n_row = ?"
-            + " order by sheet_id, n_row, n_col");
+      .prepareStatement("select * from cells where sheet_id = ? and n_row = ?"
+        + " order by sheet_id, n_row, n_col");
     try {
       ps.setInt(1, sheetNo);
       ps.setInt(2, row);
@@ -369,14 +362,14 @@ public class SheetHandler extends DefaultHandler implements Sheet {
     connection.commit();
     return ret;
   }
-  
+
   @Override
   public void scanRows(int colCountInRow, RowHandler handler) {
     try {
       scanRowsEx(colCountInRow, handler);
     } catch (Exception e) {
       if (e instanceof RuntimeException) {
-        throw (RuntimeException)e;
+        throw (RuntimeException) e;
       }
       throw new RuntimeException(e);
     } finally {
@@ -387,7 +380,7 @@ public class SheetHandler extends DefaultHandler implements Sheet {
       }
     }
   }
-  
+
   private void scanRowsEx(int colCountInRow, RowHandler handler) throws Exception {
     List<Cell> row = new ArrayList<Cell>();
     for (int i = 0; i < colCountInRow; i++) {
@@ -396,7 +389,7 @@ public class SheetHandler extends DefaultHandler implements Sheet {
       row.add(cell);
     }
     PreparedStatement ps = connection.prepareStatement(//
-        "select * from cells where sheet_id = ? order by sheet_id, n_row, n_col");
+      "select * from cells where sheet_id = ? order by sheet_id, n_row, n_col");
     try {
       ps.setInt(1, sheetNo);
       ResultSet rs = ps.executeQuery();
@@ -429,7 +422,7 @@ public class SheetHandler extends DefaultHandler implements Sheet {
           while (++currColIndex < colIndex) {
             row.get(currColIndex).cleanData();
           }
-          ((MyCell)row.get(colIndex)).readData(rs);
+          ((MyCell) row.get(colIndex)).readData(rs);
         }
         handler.handle(row, currRowIndex);
       } finally {

@@ -1,120 +1,33 @@
 plugins {
-  id 'org.ajoberstar.grgit' version '2.1.0'
+  id "kz.greetgo.upload-to-maven" version "0.0.5"
+  id "kz.greetgo.upload-to-gg-repo" version "0.0.5"
 }
-apply plugin: 'org.ajoberstar.grgit'
+
 apply plugin: 'java'
-apply plugin: 'eclipse'
 apply plugin: 'idea'
 apply plugin: 'maven'
-apply plugin: 'signing'
 
 group = 'kz.greetgo'
-sourceCompatibility = 1.7
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
 version = '0.4.24'
-
-def nowDate = new Date()
-def nowFormattedDate = nowDate.format("yyyy-MM-dd/HH:mm:ss")
-def ggRepo = System.getenv('GG_REPO')
-def vendorName = "greetgo!"
-
-jar {
-  manifest {
-    attributes(
-      'Specification-Title': project.name,
-      'Specification-Version': version,
-      'Specification-Vendor': vendorName,
-      'Implementation-Version': grgit.head().id,
-      'Created-By': System.getProperty("user.name"),
-      'Created-At': nowFormattedDate
-    )
-  }
-}
-
-eclipse {
-  jdt {
-    //
-    // if you want to alter the java versions (by default they are configured with
-    // gradle java plugin settings):
-    //
-    sourceCompatibility = 1.7
-    targetCompatibility = 1.7
-  }
-}
-
-project.eclipse.classpath.file.whenMerged { cp ->
-  if (project.hasProperty("sourceCompatibility")) {
-    cp.entries.findAll { it.path.contains('JRE_CONTAINER') }.each {
-      it.path += "/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/" +
-        "JavaSE-$project.sourceCompatibility"
-    }
-  }
-}
 
 repositories {
   mavenLocal()
-  if (ggRepo?.trim()) maven { url ggRepo.trim() }
-  jcenter()
+  if (System.getenv('GG_REPO')?.trim()) maven { url System.getenv('GG_REPO').trim() }
+  mavenCentral()
 }
 
-configurations { repoUpload }
-
 dependencies {
-  testCompile 'org.testng:testng:6.5.1'
+  ext.greetgoConfVersion = '0.0.12'
+  ext.greetgoUtilVersion = '0.1.1'
+  ext.greetgoClassScannerVersion = '2.0.0'
+
+  testCompile 'org.testng:testng:6.14.3'
   testCompile 'org.easytesting:fest-assert-core:2.0M10'
   testCompile 'org.apache.derby:derby:10.12.1.1'
 }
 
-test {
-  useTestNG()
-  options.suites("test_resources/tests.xml")
-}
-
-task javadocJar(type: Jar, dependsOn: 'javadoc') {
-  from javadoc.destinationDir
-  classifier = 'javadoc'
-}
-
-task sourcesJar(type: Jar) {
-  from sourceSets.main.allSource
-  classifier = 'sources'
-}
-
-artifacts {
-  archives javadocJar
-  archives sourcesJar
-}
-
-[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
-sourceSets.main.java.srcDirs = ["src"]
-sourceSets.main.resources.srcDirs = ["src", "src_resources"]
-sourceSets.test.java.srcDirs = ["test_src"]
-sourceSets.test.resources.srcDirs = ["test_src", "test_resources"]
-
-uploadArchives {
-  repositories.mavenDeployer {
-    configuration = configurations.archives
-    repository(url: ggRepo)
-
-    pom.project {
-      name project.name
-      packaging 'jar'
-    }
-  }
-}
-
-if (System.getenv('LIB_SIGN_GPG_KEY_ID') != null && System.getenv('LIB_SIGN_GPG_KEY_ID').length() > 0) {
-  gradle.taskGraph.whenReady { taskGraph ->
-    if (taskGraph.allTasks.any { it instanceof Sign }) {
-      allprojects { ext."signing.keyId" = System.getenv('LIB_SIGN_GPG_KEY_ID') }
-      allprojects { ext."signing.secretKeyRingFile" = System.getenv('LIB_SIGN_GPG_KEY_LOCATION') }
-      allprojects { ext."signing.password" = System.getenv('LIB_SIGN_GPG_KEY_PASSWORD') }
-    }
-  }
-}
-
-signing {
-  sign configurations.archives
-}
 
 tasks.withType(Javadoc) {
   options.addStringOption('Xdoclint:none', '-quiet')
@@ -122,55 +35,48 @@ tasks.withType(Javadoc) {
   options.addStringOption('charSet', 'UTF-8')
 }
 
-project.tasks.create('uploadToMavenCentral', Upload.class) {
-  group = "upload"
-  configuration = configurations.archives
-  repositories {
-    mavenDeployer {
-      beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+test.useTestNG()
 
-      repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-        authentication(
-          userName: System.getenv('LIB_SONATYPE_ACCOUNT_HASH_ID'),
-          password: System.getenv('LIB_SONATYPE_ACCOUNT_HASH_PASSWORD')
-        )
-      }
+idea.module.downloadSources = true
+idea.module.downloadJavadoc = true
+idea.module.inheritOutputDirs = false
+idea.module.outputDir = file("$buildDir/classes/main/")
+idea.module.testOutputDir = file("$buildDir/classes/test/")
 
-      snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-        authentication(
-          userName: System.getenv('LIB_SONATYPE_ACCOUNT_HASH_ID'),
-          password: System.getenv('LIB_SONATYPE_ACCOUNT_HASH_PASSWORD')
-        )
-      }
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+[compileJava, compileTestJava]*.options*.debugOptions*.debugLevel = "source,lines,vars"
 
-      pom.project {
-        name project.name
-        packaging 'jar'
+sourceSets.main.java.srcDirs = ["src"]
+sourceSets.test.java.srcDirs = ["test_src"]
+sourceSets.main.resources.srcDirs = ["src_resources"]
+sourceSets.test.resources.srcDirs = ["test_resources"]
 
-        description 'Lightweight implementation of pattern MVC. Idea based on SpringMVC'
-        url 'http://tech.greetgo.kz/libs/greetgo/msoffice.php'
+sourceSets.main.resources {
+  srcDirs += sourceSets.main.java.srcDirs
+  exclude '**/*.java'
+}
+sourceSets.test.resources {
+  srcDirs += sourceSets.test.java.srcDirs
+  exclude '**/*.java'
+}
 
-        scm {
-          connection 'scm:git:https://github.com/greetgo/greetgo.msoffice'
-          developerConnection 'scm:git:https://github.com/greetgo/greetgo.msoffice'
-          url 'https://github.com/greetgo/greetgo.msoffice'
-        }
+jar {
+  manifest {
+    attributes 'Implementation-Title': project.name
+    attributes 'Implementation-Version': version
+    attributes 'Implementation-Vendor': "greetgo!"
+    attributes 'Created-By': System.getProperty("user.name")
+    //attributes 'Created-At': new Date().format("yyyy-MM-dd/HH:mm:ss")
+  }
+}
 
-        licenses {
-          license {
-            name 'The Apache License, Version 2.0'
-            url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-          }
-        }
-
-        developers {
-          developer {
-            id 'greetgo'
-            name 'Yevgeniy Kolpakov'
-            email 'tech@greet-go.com'
-          }
-        }
-      }
-    }
+uploadToMavenCentral {
+  description = "greetgo library to generate or parse MS Office files"
+  url = 'https://github.com/greetgo/greetgo.msoffice'
+  scm.url = 'git@github.com:greetgo/greetgo.msoffice.git'
+  developer {
+    id = 'pompei'
+    name = 'Evgeniy Kolpakov'
+    email = 'ekolpakov@greet-go.com'
   }
 }

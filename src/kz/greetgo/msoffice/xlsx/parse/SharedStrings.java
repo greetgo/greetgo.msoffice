@@ -6,6 +6,7 @@ import java.io.PrintStream;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import java.nio.charset.StandardCharsets;
 
 public class SharedStrings {
   private static final int SPACE_FOR_HEADER = 200;
@@ -65,11 +66,11 @@ public class SharedStrings {
       fc.position(0);
       StringBuilder sb = new StringBuilder();
       sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\r\n");
-      sb.append("<sst xmlns=\"http://schemas.openxmlformats.org/"
-          + "spreadsheetml/2006/main\" count=\"" + index + "\" uniqueCount=\"" + index + "\">");
+      sb.append("<sst xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" count=\"")
+        .append(index).append("\" uniqueCount=\"").append(index).append("\">");
       
       {
-        ByteBuffer buf = ByteBuffer.wrap(sb.toString().getBytes("UTF-8"));
+        ByteBuffer buf = ByteBuffer.wrap(sb.toString().getBytes(StandardCharsets.UTF_8));
         while (buf.hasRemaining()) {
           fc.write(buf);
         }

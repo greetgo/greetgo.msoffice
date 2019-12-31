@@ -24,7 +24,7 @@ public class SheetCoord {
   }
   
   public SheetCoord(String coord) {
-    int[] coordp = UtilOffice.parseCellCoord(coord);
+    int[] coordp = UtilOffice.parseCellCoordinate(coord);
     col = coordp[0];
     row = coordp[1];
   }
@@ -37,7 +37,7 @@ public class SheetCoord {
   }
   
   public SheetCoord(String coord, int coloff, int rowoff) {
-    int[] coordp = UtilOffice.parseCellCoord(coord);
+    int[] coordp = UtilOffice.parseCellCoordinate(coord);
     col = coordp[0];
     row = coordp[1];
     this.coloff = coloff;
