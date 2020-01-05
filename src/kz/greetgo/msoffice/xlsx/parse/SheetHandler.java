@@ -1,6 +1,6 @@
 package kz.greetgo.msoffice.xlsx.parse;
 
-import kz.greetgo.msoffice.UtilOffice;
+import kz.greetgo.msoffice.util.UtilOffice;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;

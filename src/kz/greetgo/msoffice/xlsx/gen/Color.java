@@ -1,6 +1,6 @@
 package kz.greetgo.msoffice.xlsx.gen;
 
-import kz.greetgo.msoffice.UtilOffice;
+import kz.greetgo.msoffice.util.UtilOffice;
 
 public class Color {
   private int alfa, red, green, blue;

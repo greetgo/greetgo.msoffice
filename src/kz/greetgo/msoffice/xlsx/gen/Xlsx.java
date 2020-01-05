@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
-import kz.greetgo.msoffice.UtilOffice;
+import kz.greetgo.msoffice.util.UtilOffice;
 import kz.greetgo.msoffice.xlsx.parse.SharedStrings;
 
 public class Xlsx {

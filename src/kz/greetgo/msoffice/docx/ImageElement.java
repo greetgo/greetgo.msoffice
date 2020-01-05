@@ -1,6 +1,6 @@
 package kz.greetgo.msoffice.docx;
 
-import kz.greetgo.msoffice.UtilOffice;
+import kz.greetgo.msoffice.util.UtilOffice;
 
 import java.io.PrintStream;
 

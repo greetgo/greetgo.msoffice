@@ -5,7 +5,7 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import kz.greetgo.msoffice.UtilOffice;
+import kz.greetgo.msoffice.util.UtilOffice;
 
 public class Run implements XmlWriter {
   private List<RunElement> elements = new ArrayList<RunElement>();

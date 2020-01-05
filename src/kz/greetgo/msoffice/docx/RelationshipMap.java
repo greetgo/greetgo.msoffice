@@ -7,7 +7,7 @@ import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import kz.greetgo.msoffice.UtilOffice;
+import kz.greetgo.msoffice.util.UtilOffice;
 
 class RelationshipMap implements FilePart {
   private Map<String, Relationship> relationships = new HashMap<String, Relationship>();

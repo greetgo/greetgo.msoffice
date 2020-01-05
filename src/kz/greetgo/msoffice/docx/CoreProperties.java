@@ -3,7 +3,7 @@ package kz.greetgo.msoffice.docx;
 import java.io.PrintStream;
 import java.util.Date;
 
-import kz.greetgo.msoffice.UtilOffice;
+import kz.greetgo.msoffice.util.UtilOffice;
 
 public class CoreProperties implements ContentElement {
   private final String partName;

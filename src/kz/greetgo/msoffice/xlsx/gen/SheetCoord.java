@@ -1,6 +1,6 @@
 package kz.greetgo.msoffice.xlsx.gen;
 
-import kz.greetgo.msoffice.UtilOffice;
+import kz.greetgo.msoffice.util.UtilOffice;
 
 /**
  * Координаты на листе. Используются в графиках и для изображений.

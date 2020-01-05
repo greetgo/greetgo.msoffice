@@ -1,6 +1,5 @@
 package kz.greetgo.msoffice.xlsx.xlsx_reader;
 
-import kz.greetgo.msoffice.XmlUtil;
 import kz.greetgo.msoffice.xlsx.xlsx_reader.model.Border;
 import kz.greetgo.msoffice.xlsx.xlsx_reader.model.Border4;
 import kz.greetgo.msoffice.xlsx.xlsx_reader.model.BorderSide;
@@ -16,7 +15,7 @@ import org.xml.sax.Attributes;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static kz.greetgo.msoffice.UtilOffice.strToInt;
+import static kz.greetgo.msoffice.util.UtilOffice.strToInt;
 
 public class StylesHandler extends AbstractXmlHandler {
 

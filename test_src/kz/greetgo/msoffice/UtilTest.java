@@ -1,19 +1,57 @@
 package kz.greetgo.msoffice;
 
+import kz.greetgo.msoffice.util.UtilOffice;
+import kz.greetgo.msoffice.xlsx.xlsx_reader.model.ColData;
+import kz.greetgo.msoffice.xlsx.xlsx_reader.model.RowData;
+import kz.greetgo.msoffice.xlsx.xlsx_reader.model.ValueType;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Random;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
 public class UtilTest {
 
   private final Map<String, String> map = new HashMap<>();
+
+  public static ColData rndColData(Random rnd) {
+    ColData colData = new ColData();
+    colData.valueType = ValueType.values()[rnd.nextInt(ValueType.values().length)];
+    colData.value = UtilTest.rndStr(rnd, 30 + rnd.nextInt(30));
+    colData.col = rnd.nextInt();
+    return colData;
+  }
+
+  public static BigDecimal rndBd(Random rnd) {
+    byte[] intBytes = new byte[30 + rnd.nextInt(30)];
+    rnd.nextBytes(intBytes);
+
+    BigInteger bi = new BigInteger(intBytes);
+    int scale = rnd.nextInt();
+    return new BigDecimal(bi, scale);
+  }
+
+  public static RowData rndRowData(Random rnd) {
+    return rndRowData(rnd, null);
+  }
+
+  public static RowData rndRowData(Random rnd, Integer index) {
+    RowData rowData = new RowData();
+    rowData.index = index == null ? rnd.nextInt() : index;
+    rowData.height = rndBd(rnd);
+
+    for (int i = 0, c = 10 + rnd.nextInt(10); i < c; i++) {
+      rowData.cols.add(rndColData(rnd));
+    }
+    return rowData;
+  }
 
   @BeforeMethod
   public void prepareExcelMap() {
@@ -49,5 +87,23 @@ public class UtilTest {
       .describedAs(message + ": expected = " + expected + ", actual = " + actual + ", delta = " + delta
         + ", but eps = " + eps)
       .isTrue();
+  }
+
+  @SuppressWarnings("SpellCheckingInspection")
+  private static final String ENG = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  private static final String DEG = "0123456789";
+  private static final String RUS = "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ";
+  private static final String CHIN = "⻨⻩⻪⻫⻬⻭⻮⻯⻰⻱⻲⻳⻠⻡⻢⻣⻤⻥⻦⻧⾀⾁⾂⾃⾄⾅⾆⾇⾈⾉⾊⾋⾌⾍⾎⾏⾐⾑⾒⾓⾔⾕⾖⾗⾘" +
+    "⾙⾚⾛⾜⾝⾞⾟⾠⾡⾢⾣⾤⾥⾦⾧⾨⾩⾪⾫⾬⾭⾮⾯⾰⾱⾲⾳⾴⾵⾶⾷⾸⾹⾺⾻⾼⾽⾾⾿⿀⿁⿂⿃⿄⿅⿆⿇⿈⿉⿊⿋⿌⿍⿎⿏⿐⿑⿒⿓⿔⿕";
+
+  private static final char[] ALL = (ENG.toUpperCase() + ENG.toLowerCase() + DEG + RUS.toLowerCase()
+    + RUS.toUpperCase() + CHIN).toCharArray();
+
+  public static String rndStr(Random rnd, int length) {
+    char[] chars = new char[length];
+    for (int i = 0; i < length; i++) {
+      chars[i] = ALL[rnd.nextInt(ALL.length)];
+    }
+    return new String(chars);
   }
 }

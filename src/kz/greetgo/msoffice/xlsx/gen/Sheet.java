@@ -1,7 +1,7 @@
 package kz.greetgo.msoffice.xlsx.gen;
 
 import kz.greetgo.msoffice.ImageType;
-import kz.greetgo.msoffice.UtilOffice;
+import kz.greetgo.msoffice.util.UtilOffice;
 import kz.greetgo.msoffice.xlsx.parse.SharedStrings;
 
 import javax.imageio.ImageIO;

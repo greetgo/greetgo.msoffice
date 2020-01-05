@@ -1,4 +1,6 @@
-package kz.greetgo.msoffice;
+package kz.greetgo.msoffice.util;
+
+import kz.greetgo.msoffice.LeftFileException;
 
 import java.awt.*;
 import java.io.BufferedReader;
@@ -537,5 +539,10 @@ public class UtilOffice {
   public static Integer strToInt(String str) {
     if (str == null) return null;
     return Integer.valueOf(str);
+  }
+
+  public static BigDecimal strToBd(String str) {
+    if (str == null || str.trim().length() == 0) return null;
+    return new BigDecimal(str.replace(',', '.'));
   }
 }

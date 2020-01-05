@@ -1,6 +1,6 @@
 package kz.greetgo.msoffice.xlsx.fastgen.simple;
 
-import static kz.greetgo.msoffice.UtilOffice.toTablePosition;
+import static kz.greetgo.msoffice.util.UtilOffice.toTablePosition;
 
 import java.io.File;
 import java.io.FileInputStream;

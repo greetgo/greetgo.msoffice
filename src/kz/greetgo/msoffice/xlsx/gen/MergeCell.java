@@ -1,6 +1,6 @@
 package kz.greetgo.msoffice.xlsx.gen;
 
-import static kz.greetgo.msoffice.UtilOffice.toLettersNumber;
+import static kz.greetgo.msoffice.util.UtilOffice.toLettersNumber;
 
 import java.io.PrintStream;
 

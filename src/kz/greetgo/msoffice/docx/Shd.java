@@ -3,7 +3,7 @@ package kz.greetgo.msoffice.docx;
 import java.awt.Color;
 import java.io.PrintStream;
 
-import kz.greetgo.msoffice.UtilOffice;
+import kz.greetgo.msoffice.util.UtilOffice;
 
 public class Shd implements XmlWriter {
   private String val;

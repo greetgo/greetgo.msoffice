@@ -1,4 +1,4 @@
-package kz.greetgo.msoffice;
+package kz.greetgo.msoffice.util;
 
 import org.xml.sax.Attributes;
 
