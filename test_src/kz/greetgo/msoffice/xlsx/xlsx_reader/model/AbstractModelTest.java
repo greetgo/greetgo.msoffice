@@ -26,4 +26,12 @@ public abstract class AbstractModelTest {
 
     }
   }
+
+  public static void assertMergeCellEquals(MergeCell actual, MergeCell expected, String d) {
+    assertThat(actual).describedAs(d).isNotNull();
+    assertThat(actual.colFrom).describedAs(d).isEqualTo(expected.colFrom);
+    assertThat(actual.colTo).describedAs(d).isEqualTo(expected.colTo);
+    assertThat(actual.rowFrom).describedAs(d).isEqualTo(expected.rowFrom);
+    assertThat(actual.rowTo).describedAs(d).isEqualTo(expected.rowTo);
+  }
 }

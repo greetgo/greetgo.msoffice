@@ -9,14 +9,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Random;
 import java.util.function.Function;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
 public class SheetDataTest extends AbstractModelTest {
-
-  final Random rnd = new Random();
 
   @SuppressWarnings("SameParameterValue")
   private Function<String, Path> tmpDir(String pathInBuild) {

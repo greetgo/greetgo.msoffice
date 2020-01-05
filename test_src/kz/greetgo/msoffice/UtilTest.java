@@ -2,6 +2,7 @@ package kz.greetgo.msoffice;
 
 import kz.greetgo.msoffice.util.UtilOffice;
 import kz.greetgo.msoffice.xlsx.xlsx_reader.model.ColData;
+import kz.greetgo.msoffice.xlsx.xlsx_reader.model.MergeCell;
 import kz.greetgo.msoffice.xlsx.xlsx_reader.model.RowData;
 import kz.greetgo.msoffice.xlsx.xlsx_reader.model.ValueType;
 import org.testng.annotations.BeforeMethod;
@@ -51,6 +52,15 @@ public class UtilTest {
       rowData.cols.add(rndColData(rnd));
     }
     return rowData;
+  }
+
+  public static MergeCell rndMergeCell(Random rnd) {
+    MergeCell ret = new MergeCell();
+    ret.rowFrom = rnd.nextInt();
+    ret.colFrom = rnd.nextInt();
+    ret.colFrom = rnd.nextInt();
+    ret.colTo = rnd.nextInt();
+    return ret;
   }
 
   @BeforeMethod

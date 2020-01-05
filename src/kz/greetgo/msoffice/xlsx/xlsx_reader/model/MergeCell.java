@@ -1,6 +1,11 @@
 package kz.greetgo.msoffice.xlsx.xlsx_reader.model;
 
+import kz.greetgo.msoffice.util.BinUtil;
 import kz.greetgo.msoffice.util.UtilOffice;
+
+import static kz.greetgo.msoffice.util.BinUtil.SIZEOF_INT;
+import static kz.greetgo.msoffice.util.BinUtil.readInt;
+import static kz.greetgo.msoffice.util.BinUtil.writeInt;
 
 public class MergeCell {
 
@@ -38,5 +43,25 @@ public class MergeCell {
   @Override
   public String toString() {
     return "MergeCell{" + "rowFrom=" + rowFrom + ", rowTo=" + rowTo + ", colFrom=" + colFrom + ", colTo=" + colTo + '}';
+  }
+
+  public void writeBytes(byte[] buffer, int offset) {
+    writeInt(rowFrom, buffer, offset);
+    writeInt(rowTo, buffer, offset + SIZEOF_INT);
+    writeInt(colFrom, buffer, offset + SIZEOF_INT * 2);
+    writeInt(colTo, buffer, offset + SIZEOF_INT * 3);
+  }
+
+  public static MergeCell readFrom(byte[] buffer, int offset) {
+    MergeCell ret = new MergeCell();
+    ret.rowFrom = readInt(buffer, offset);
+    ret.rowTo = readInt(buffer, offset + SIZEOF_INT);
+    ret.colFrom = readInt(buffer, offset + SIZEOF_INT * 2);
+    ret.colTo = readInt(buffer, offset + SIZEOF_INT * 3);
+    return ret;
+  }
+
+  public int byteSize() {
+    return BinUtil.SIZEOF_INT * 4;
   }
 }
