@@ -19,6 +19,10 @@ public class RowData {
   public BigDecimal height;
   public final List<ColData> cols = new ArrayList<>();
 
+  public double heightAsDouble() {
+    return height == null ? 15 : height.doubleValue();
+  }
+
   public static RowData empty(int index) {
     RowData ret = new RowData();
     ret.index = index;

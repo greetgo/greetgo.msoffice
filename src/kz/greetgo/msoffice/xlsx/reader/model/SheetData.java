@@ -12,20 +12,20 @@ import java.util.List;
 import java.util.function.Function;
 
 public class SheetData implements AutoCloseable {
-  public final String name;
 
   public final List<ColumnInfo> columnInfoList = new ArrayList<>();
 
+  public final int id;
   private final RefList rowRefList;
   private final RefList mergeCellRefList;
   private final RandomAccessFile data;
 
-  public SheetData(String name, Function<String, Path> createTmpFile) {
-    this.name = name;
-    rowRefList = new RefList(createTmpFile.apply(name + "-row-ref-list"));
-    mergeCellRefList = new RefList(createTmpFile.apply(name + "-merge-cell-ref-list"));
+  public SheetData(int id, Function<String, Path> createTmpFile) {
+    this.id = id;
+    rowRefList = new RefList(createTmpFile.apply("sheet" + id + "-row-ref-list"));
+    mergeCellRefList = new RefList(createTmpFile.apply("sheet" + id + "-merge-cell-ref-list"));
     try {
-      data = new RandomAccessFile(createTmpFile.apply(name + "-data").toFile(), "rw");
+      data = new RandomAccessFile(createTmpFile.apply("sheet" + id + "-data").toFile(), "rw");
     } catch (FileNotFoundException e) {
       throw new RuntimeException(e);
     }

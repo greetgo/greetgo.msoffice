@@ -1,15 +1,17 @@
 package kz.greetgo.msoffice.xlsx.reader;
 
+import kz.greetgo.msoffice.util.XmlUtil;
 import kz.greetgo.msoffice.xlsx.reader.model.Border;
 import kz.greetgo.msoffice.xlsx.reader.model.Border4;
+import kz.greetgo.msoffice.xlsx.reader.model.BorderSide;
 import kz.greetgo.msoffice.xlsx.reader.model.BorderStyle;
 import kz.greetgo.msoffice.xlsx.reader.model.CellStyleXf;
+import kz.greetgo.msoffice.xlsx.reader.model.CellXf;
 import kz.greetgo.msoffice.xlsx.reader.model.FontData;
 import kz.greetgo.msoffice.xlsx.reader.model.HorizontalAlign;
-import kz.greetgo.msoffice.xlsx.reader.model.StyleXf;
-import kz.greetgo.msoffice.xlsx.reader.model.Styles;
+import kz.greetgo.msoffice.xlsx.reader.model.NumFmtData;
+import kz.greetgo.msoffice.xlsx.reader.model.StylesData;
 import kz.greetgo.msoffice.xlsx.reader.model.VerticalAlign;
-import kz.greetgo.msoffice.xlsx.reader.model.BorderSide;
 import org.xml.sax.Attributes;
 
 import java.util.regex.Matcher;
@@ -19,13 +21,18 @@ import static kz.greetgo.msoffice.util.UtilOffice.strToInt;
 
 public class StylesHandler extends AbstractXmlHandler {
 
-  private final Styles styles = new Styles();
+  private final StylesData styles;
+
+  public StylesHandler(StylesData styles) {
+    this.styles = styles;
+  }
 
   private FontData font;
   private Border4 border4;
+  private CellXf cellXf;
+
   @SuppressWarnings("FieldCanBeLocal")
-  private StyleXf xf;
-  private CellStyleXf cellXf;
+  private CellStyleXf cellStyleXf;
 
   private static final Pattern PATH_BORDER = Pattern.compile(
     "/styleSheet/borders/border/(left|right|top|bottom|diagonal)");
@@ -68,17 +75,19 @@ public class StylesHandler extends AbstractXmlHandler {
     }
 
     if ("/styleSheet/cellStyleXfs/xf".equals(tagPath)) {
-      xf = styles.newStyleXf();
-      xf.numFmtId = strToInt(attributes.getValue("numFmtId"));
-      xf.fontId = strToInt(attributes.getValue("fontId"));
-      xf.fillId = strToInt(attributes.getValue("fillId"));
-      xf.borderId = strToInt(attributes.getValue("borderId"));
+      cellStyleXf = styles.newCellStyleXf();
+      cellStyleXf.numFmtId = strToInt(attributes.getValue("numFmtId"));
+      cellStyleXf.fontId = strToInt(attributes.getValue("fontId"));
+      cellStyleXf.fillId = strToInt(attributes.getValue("fillId"));
+      cellStyleXf.borderId = strToInt(attributes.getValue("borderId"));
       return;
     }
 
     if ("/styleSheet/cellXfs/xf".equals(tagPath)) {
       cellXf = styles.newCellXf();
-      cellXf.numFmtId = strToInt(attributes.getValue("numFmtId"));
+      cellXf.numFmtId = "1".equals(attributes.getValue("applyNumberFormat"))
+        ? strToInt(attributes.getValue("numFmtId"))
+        : null;
       cellXf.fontId = strToInt(attributes.getValue("fontId"));
       cellXf.fillId = strToInt(attributes.getValue("fillId"));
       cellXf.borderId = strToInt(attributes.getValue("borderId"));
@@ -91,6 +100,16 @@ public class StylesHandler extends AbstractXmlHandler {
       cellXf.horizontalAlign = HorizontalAlign.valueOrNull(attributes.getValue("horizontal"));
       return;
     }
+
+    //noinspection SpellCheckingInspection
+    if ("/styleSheet/numFmts/numFmt".equals(tagPath)) {
+      NumFmtData numFmt = new NumFmtData(attributes.getValue("numFmtId"));
+      numFmt.formatCode = attributes.getValue("formatCode");
+      styles.numFmtDataIdMap.put(numFmt.id, numFmt);
+      return;
+    }
+
+    System.out.println("j235v6 :: styles tagPath = " + tagPath + " " + XmlUtil.toStr(attributes));
 
   }
 

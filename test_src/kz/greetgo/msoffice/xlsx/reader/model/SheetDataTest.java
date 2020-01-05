@@ -33,7 +33,7 @@ public class SheetDataTest extends AbstractModelTest {
     rows.add(RowData.empty(1));
     rows.add(RowData.empty(2));
 
-    SheetData sheet = new SheetData("checkRowsLogic", tmpDir("SheetDataTest-checkRowsLogic"));
+    SheetData sheet = new SheetData(123, tmpDir("SheetDataTest-checkRowsLogic"));
 
     for (int i = 0; i < 10; i++) {
       RowData row = UtilTest.rndRowData(rnd, rows.size());
@@ -60,7 +60,7 @@ public class SheetDataTest extends AbstractModelTest {
       cells.add(rndMergeCell(rnd));
     }
 
-    SheetData sheet = new SheetData("checkMergeCellLogic", tmpDir("SheetDataTest-checkMergeCellLogic"));
+    SheetData sheet = new SheetData(321, tmpDir("SheetDataTest-checkMergeCellLogic"));
 
     for (MergeCell cell : cells) {
       sheet.addMergeCell(cell);

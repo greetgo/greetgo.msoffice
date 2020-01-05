@@ -27,6 +27,7 @@ public class UtilTest {
     colData.valueType = ValueType.values()[rnd.nextInt(ValueType.values().length)];
     colData.value = UtilTest.rndStr(rnd, 30 + rnd.nextInt(30));
     colData.col = rnd.nextInt();
+    colData.style = rnd.nextInt();
     return colData;
   }
 

@@ -2,7 +2,8 @@ package kz.greetgo.msoffice.xlsx.reader;
 
 import kz.greetgo.msoffice.util.UtilOffice;
 import kz.greetgo.msoffice.xlsx.reader.model.SheetData;
-import org.xml.sax.Attributes;
+import kz.greetgo.msoffice.xlsx.reader.model.StylesData;
+import kz.greetgo.msoffice.xlsx.reader.model.WorkbookData;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -16,7 +17,10 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -26,8 +30,10 @@ import java.util.zip.ZipInputStream;
 public class XlsxReader implements AutoCloseable {
 
   private final StoredStrings storedStrings;
+  private final StylesData styles = new StylesData();
 
-  private final List<SheetData> sheetDataList = new ArrayList<>();
+  private final Map<Integer, SheetData> sheetDataMap = new HashMap<>();
+  private final WorkbookData workbook = new WorkbookData();
 
   private final Path tempDir;
   private Random random = new Random();
@@ -75,7 +81,7 @@ public class XlsxReader implements AutoCloseable {
       : new ZipInputStream(inputStream, StandardCharsets.UTF_8);
   }
 
-  private static final Pattern SHEET_NAME = Pattern.compile("xl/worksheets/(\\w+)\\.xml");
+  private static final Pattern SHEET_FILE = Pattern.compile("xl/worksheets/sheet(\\d+)\\.xml");
 
   public void read(InputStream inputStream) {
     try (ZipInputStream zipInputStream = wrapInZip(inputStream)) {
@@ -85,29 +91,33 @@ public class XlsxReader implements AutoCloseable {
         if (entry == null) {
           break;
         }
-        try {
+        String entryName = entry.getName();
 
-          String entryName = entry.getName();
+        try {
           if ("xl/sharedStrings.xml".equals(entryName)) {
-            doParsing(zipInputStream, new StringsHandler());
+            doParsing(zipInputStream, new StringsHandler(storedStrings));
             continue;
           }
           if ("xl/styles.xml".equals(entryName)) {
-            doParsing(zipInputStream, new StylesHandler());
+            doParsing(zipInputStream, new StylesHandler(styles));
+            continue;
+          }
+          if ("xl/workbook.xml".equals(entryName)) {
+            doParsing(zipInputStream, new WorkbookHandler(workbook));
             continue;
           }
 
           {
-            Matcher matcher = SHEET_NAME.matcher(entryName);
+            Matcher matcher = SHEET_FILE.matcher(entryName);
             if (matcher.matches()) {
-              SheetData sheetData = new SheetData(matcher.group(1), this::createTmpFile);
-              sheetDataList.add(sheetData);
+              SheetData sheetData = new SheetData(Integer.parseInt(matcher.group(1)), this::createTmpFile);
+              sheetDataMap.put(sheetData.id, sheetData);
               doParsing(zipInputStream, new SheetHandler(sheetData));
               continue;
             }
           }
 
-          System.out.println("j253bv235 :: " + entryName);
+//          System.out.println("j253bv235 :: " + entryName);
         } finally {
           zipInputStream.closeEntry();
         }
@@ -127,17 +137,25 @@ public class XlsxReader implements AutoCloseable {
     reader.parse(new InputSource(UtilOffice.copy(inputStream)));
   }
 
-  private class StringsHandler extends AbstractXmlHandler {
-    @Override
-    protected void startTag(String tagPath, Attributes attributes) {}
+  public int sheetCount() {
+    return workbook.sheetRefList.size();
+  }
 
-    @Override
-    protected void endTag(String tagPath) {
-      if ("/sst/si/t".equals(tagPath)) {
-        storedStrings.append(text());
-      }
+  private final Map<Integer, SheetReader> sheetReaderMap = new HashMap<>();
+
+  public Sheet sheet(int index) {
+    {
+      SheetReader sheetReader = sheetReaderMap.get(index);
+      if (sheetReader != null) return sheetReader;
     }
-
+    {
+      SheetRef ref = workbook.sheetRefList.get(index);
+      SheetData sheetData = sheetDataMap.get(ref.id);
+      Objects.requireNonNull(sheetData, "index = " + index + ", sheet id = " + ref.id);
+      SheetReader sheetReader = new SheetReader(styles, storedStrings, ref, sheetData);
+      sheetReaderMap.put(index, sheetReader);
+      return sheetReader;
+    }
   }
 
 }

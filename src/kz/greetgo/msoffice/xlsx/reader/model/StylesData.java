@@ -1,14 +1,17 @@
 package kz.greetgo.msoffice.xlsx.reader.model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-public class Styles {
+public class StylesData {
 
   public final List<FontData> fontList = new ArrayList<>();
   public final List<Border4> border4List = new ArrayList<>();
-  public final List<StyleXf> xfList = new ArrayList<>();
-  public final List<CellStyleXf> cellXfList = new ArrayList<>();
+  public final List<CellXf> cellXfList = new ArrayList<>();
+  public final List<CellStyleXf> cellStyleXfList = new ArrayList<>();
+  public final Map<Integer, NumFmtData> numFmtDataIdMap = new HashMap<>();
 
   public FontData newFont() {
     FontData fontData = new FontData();
@@ -22,15 +25,19 @@ public class Styles {
     return b;
   }
 
-  public StyleXf newStyleXf() {
-    StyleXf xf = new StyleXf();
-    xfList.add(xf);
+  public CellXf newCellXf() {
+    CellXf xf = new CellXf();
+    cellXfList.add(xf);
     return xf;
   }
 
-  public CellStyleXf newCellXf() {
+  public CellStyleXf newCellStyleXf() {
     CellStyleXf xf = new CellStyleXf();
-    cellXfList.add(xf);
+    cellStyleXfList.add(xf);
     return xf;
+  }
+
+  public CellXf getCellXf(int style) {
+    return cellXfList.get(style);
   }
 }

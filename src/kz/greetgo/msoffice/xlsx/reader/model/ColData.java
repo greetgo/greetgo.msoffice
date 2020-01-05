@@ -14,10 +14,11 @@ import static kz.greetgo.msoffice.util.BinUtil.writeStr;
 public class ColData {
   public ValueType valueType;
   public int col;
+  public int style;
   public String value;
 
   public int byteSize() {
-    return SIZEOF_SHORT + SIZEOF_INT + BinUtil.sizeOfStr(value);
+    return SIZEOF_SHORT + SIZEOF_INT * 2 + BinUtil.sizeOfStr(value);
   }
 
   public void writeBytes(byte[] buffer, int offset) {
@@ -25,7 +26,8 @@ public class ColData {
 
     writeShort(valueTypeInt, buffer, offset);
     writeInt(col, buffer, offset + SIZEOF_SHORT);
-    writeStr(value, buffer, offset + SIZEOF_SHORT + SIZEOF_INT);
+    writeInt(style, buffer, offset + SIZEOF_SHORT + SIZEOF_INT);
+    writeStr(value, buffer, offset + SIZEOF_SHORT + SIZEOF_INT * 2);
 
   }
 
@@ -33,7 +35,8 @@ public class ColData {
     ColData colData = new ColData();
     colData.valueType = ValueType.values()[(int) readShort(buffer, offset)];
     colData.col = readInt(buffer, offset + SIZEOF_SHORT);
-    colData.value = readStr(buffer, offset + SIZEOF_SHORT + SIZEOF_INT);
+    colData.style = readInt(buffer, offset + SIZEOF_SHORT + SIZEOF_INT);
+    colData.value = readStr(buffer, offset + SIZEOF_SHORT + SIZEOF_INT * 2);
     return colData;
   }
 

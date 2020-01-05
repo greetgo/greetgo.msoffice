@@ -1,7 +1,6 @@
 package kz.greetgo.msoffice.xlsx.reader;
 
 import kz.greetgo.msoffice.util.UtilOffice;
-import kz.greetgo.msoffice.util.XmlUtil;
 import kz.greetgo.msoffice.xlsx.reader.model.ColData;
 import kz.greetgo.msoffice.xlsx.reader.model.ColumnInfo;
 import kz.greetgo.msoffice.xlsx.reader.model.MergeCell;
@@ -9,6 +8,9 @@ import kz.greetgo.msoffice.xlsx.reader.model.RowData;
 import kz.greetgo.msoffice.xlsx.reader.model.SheetData;
 import kz.greetgo.msoffice.xlsx.reader.model.ValueType;
 import org.xml.sax.Attributes;
+
+import static kz.greetgo.msoffice.util.UtilOffice.parseCellCoordinate;
+import static kz.greetgo.msoffice.util.UtilOffice.strToIntOr;
 
 public class SheetHandler extends AbstractXmlHandler {
 
@@ -42,8 +44,9 @@ public class SheetHandler extends AbstractXmlHandler {
       ColData col = new ColData();
       this.col = col;
       row.cols.add(col);
-      col.col = UtilOffice.parseCellCoordinate(attributes.getValue("r"))[0];
+      col.col = parseCellCoordinate(attributes.getValue("r"))[0];
       col.valueType = ValueType.parse(attributes.getValue("t"));
+      col.style = strToIntOr(attributes.getValue("s"), 0);
       return;
     }
 
@@ -56,7 +59,7 @@ public class SheetHandler extends AbstractXmlHandler {
 
     if ("/worksheet/sheetData/row/c/v".equals(tagPath)) return;
 
-    System.out.println("j43bh25v6 ::     open " + tagPath + " " + XmlUtil.toStr(attributes) + " for " + sheet.name);
+//    System.out.println("j43bh25v6 ::     open " + tagPath + " " + XmlUtil.toStr(attributes) + " for " + sheet.name);
   }
 
   @Override
@@ -70,10 +73,5 @@ public class SheetHandler extends AbstractXmlHandler {
       sheet.addRow(row);
       return;
     }
-  }
-
-  @Override
-  public void endDocument() {
-    System.out.println("3j2n5b5b :: sheet = " + sheet);
   }
 }

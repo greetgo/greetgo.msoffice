@@ -545,4 +545,17 @@ public class UtilOffice {
     if (str == null || str.trim().length() == 0) return null;
     return new BigDecimal(str.replace(',', '.'));
   }
+
+  public static int strToIntOr(String str, int defaultValue) {
+    Integer ret = strToInt(str);
+    return ret != null ? ret : defaultValue;
+  }
+
+  @SafeVarargs
+  public static <T> T fnn(T... ttt) {
+    for (T t : ttt) {
+      if (t != null) return t;
+    }
+    return null;
+  }
 }
