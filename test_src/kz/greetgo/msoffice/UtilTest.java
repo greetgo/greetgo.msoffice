@@ -1,10 +1,10 @@
 package kz.greetgo.msoffice;
 
 import kz.greetgo.msoffice.util.UtilOffice;
-import kz.greetgo.msoffice.xlsx.xlsx_reader.model.ColData;
-import kz.greetgo.msoffice.xlsx.xlsx_reader.model.MergeCell;
-import kz.greetgo.msoffice.xlsx.xlsx_reader.model.RowData;
-import kz.greetgo.msoffice.xlsx.xlsx_reader.model.ValueType;
+import kz.greetgo.msoffice.xlsx.reader.model.ColData;
+import kz.greetgo.msoffice.xlsx.reader.model.MergeCell;
+import kz.greetgo.msoffice.xlsx.reader.model.RowData;
+import kz.greetgo.msoffice.xlsx.reader.model.ValueType;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 

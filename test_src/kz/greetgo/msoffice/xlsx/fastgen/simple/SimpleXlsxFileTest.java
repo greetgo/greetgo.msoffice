@@ -34,7 +34,7 @@ public class SimpleXlsxFileTest {
       x.newSheet(new double[]{23.3, 11.1, 21.12, 23.3, 11.1, 21.12, 23.3, 11.1, 21.12, 23.3,
         11.1, 21.12, 23.3, 11.1, 21.12, 23.3, 11.1, 21.12, 23.3, 11.1, 21.12, 23.3, 11.1, 21.12,});
 
-      for (int i = 0; i < 5000; i++) {
+      for (int i = 0; i < 50; i++) {
         x.appendRow(SimpleRowStyle.NORMAL, new String[]{sheet + "sad" + i, sheet + "fdsfdsf" + i,
           sheet + "fdsfds" + i, sheet + "1sad" + i, sheet + "7fdsfdsf" + i,
           sheet + "1fdsfds" + i, sheet + "2sad" + i, sheet + "6fdsfdsf" + i,
