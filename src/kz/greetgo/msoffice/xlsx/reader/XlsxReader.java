@@ -28,6 +28,27 @@ import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+/**
+ * Reads data from xlsx file and give random access to this data.
+ * <p>
+ * Data does NOT load to memory - data in row saved to a tmp file, because you must not get OutOfMemoryError
+ * <p>
+ * Please use try-with-resource statement using this class for example
+ * <p>
+ * <pre>
+ * try (XlsxReader xlsxReader = new XlsxReader()) {
+ *   xlsxReader.read(inputStream);
+ *
+ *   Sheet sheet = xlsxReader.tabSelectedSheet();
+ *
+ *   System.out.println("sheet name is " + sheet.name());
+ *   System.out.println("sheet row count is " + sheet.rowCount());
+ *   System.out.println(sheet.cell(3, 7).asText());
+ *   System.out.println("" + sheet.cell(3, 7).borders().topStyle());
+ *   // etc
+ * }
+ * </pre>
+ */
 public class XlsxReader implements AutoCloseable {
 
   private final XlsxReaderContext context;
