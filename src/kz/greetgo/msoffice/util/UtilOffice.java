@@ -567,4 +567,11 @@ public class UtilOffice {
     return format.contains("mm") || format.contains("yy") || format.contains("dd")
       || format.contains("hh") || format.contains("ss");
   }
+
+  public static String toLenLeft(int len, String str, String space) {
+    StringBuilder sb = new StringBuilder();
+    sb.append(str);
+    while (sb.length() < len) sb.insert(0, space);
+    return sb.toString();
+  }
 }

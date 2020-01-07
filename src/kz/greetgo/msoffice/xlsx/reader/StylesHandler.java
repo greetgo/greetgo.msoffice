@@ -1,6 +1,5 @@
 package kz.greetgo.msoffice.xlsx.reader;
 
-import kz.greetgo.msoffice.util.XmlUtil;
 import kz.greetgo.msoffice.xlsx.reader.model.Border;
 import kz.greetgo.msoffice.xlsx.reader.model.Border4;
 import kz.greetgo.msoffice.xlsx.reader.model.BorderSide;
@@ -109,7 +108,7 @@ public class StylesHandler extends AbstractXmlHandler {
       return;
     }
 
-    System.out.println("j235v6 :: styles tagPath = " + tagPath + " " + XmlUtil.toStr(attributes));
+//    System.out.println("j235v6 :: styles tagPath = " + tagPath + " " + XmlUtil.toStr(attributes));
 
   }
 

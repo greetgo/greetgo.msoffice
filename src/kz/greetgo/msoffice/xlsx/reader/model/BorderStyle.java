@@ -9,7 +9,7 @@ public enum BorderStyle {
   hair, dotted, dashDotDot, dashDot, dashed, thin, mediumDashDotDot,
   slantDashDot, mediumDashDot, mediumDashed, medium, thick, double1,
 
-  ;
+  NONE;
 
   private static final Map<String, BorderStyle> map;
 

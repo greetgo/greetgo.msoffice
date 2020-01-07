@@ -15,6 +15,7 @@ public class RowData {
   /**
    * index of row from zero
    */
+  // TODO pompei удалить это поле - оно не нужно
   public int index;
   public BigDecimal height;
   public final List<ColData> cols = new ArrayList<>();

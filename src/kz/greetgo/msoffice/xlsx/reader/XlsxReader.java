@@ -2,7 +2,6 @@ package kz.greetgo.msoffice.xlsx.reader;
 
 import kz.greetgo.msoffice.util.UtilOffice;
 import kz.greetgo.msoffice.xlsx.reader.model.SheetData;
-import kz.greetgo.msoffice.xlsx.reader.model.StylesData;
 import kz.greetgo.msoffice.xlsx.reader.model.WorkbookData;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
@@ -13,19 +12,17 @@ import org.xml.sax.helpers.XMLReaderFactory;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
-import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
@@ -33,8 +30,7 @@ import java.util.zip.ZipInputStream;
 
 public class XlsxReader implements AutoCloseable {
 
-  private final StoredStrings storedStrings;
-  private final StylesData styles = new StylesData();
+  private final XlsxReaderContext context;
 
   private final Map<Integer, SheetData> sheetDataMap = new HashMap<>();
   private final WorkbookData workbook = new WorkbookData();
@@ -42,6 +38,9 @@ public class XlsxReader implements AutoCloseable {
   private final Path tempDir;
   private Random random = new Random();
   private final List<Path> tmpFiles = new ArrayList<>();
+
+  private final Map<Integer, SheetReader> sheetReaderMap = new HashMap<>();
+  private Sheet tabSelectedSheet = null;
 
   private Path tmp(Path tmp) {
     tmpFiles.add(tmp);
@@ -70,22 +69,27 @@ public class XlsxReader implements AutoCloseable {
 
   public XlsxReader(Path tempDir) {
     this.tempDir = tempDir;
-    storedStrings = new StoredStrings(createTmpFile("stored-strings-ref"), createTmpFile("stored-strings-content"));
+
+    StoredStrings storedStrings = new StoredStrings(
+      createTmpFile("stored-strings-ref"), createTmpFile("stored-strings-content"));
+
+    context = new XlsxReaderContext(storedStrings);
   }
 
   @Override
   public void close() {
-    storedStrings.close();
+    context.storedStrings.close();
     tmpFiles.stream().map(Path::toFile).forEach(File::delete);
   }
-
   private static ZipInputStream wrapInZip(InputStream inputStream) {
     return inputStream instanceof ZipInputStream
       ? (ZipInputStream) inputStream
       : new ZipInputStream(inputStream, StandardCharsets.UTF_8);
   }
-
   private static final Pattern SHEET_FILE = Pattern.compile("xl/worksheets/sheet(\\d+)\\.xml");
+
+
+
 
   public void read(InputStream inputStream) {
     try (ZipInputStream zipInputStream = wrapInZip(inputStream)) {
@@ -99,11 +103,11 @@ public class XlsxReader implements AutoCloseable {
 
         try {
           if ("xl/sharedStrings.xml".equals(entryName)) {
-            doParsing(zipInputStream, new StringsHandler(storedStrings));
+            doParsing(zipInputStream, new StringsHandler(context.storedStrings));
             continue;
           }
           if ("xl/styles.xml".equals(entryName)) {
-            doParsing(zipInputStream, new StylesHandler(styles));
+            doParsing(zipInputStream, new StylesHandler(context.styles));
             continue;
           }
           if ("xl/workbook.xml".equals(entryName)) {
@@ -146,16 +150,10 @@ public class XlsxReader implements AutoCloseable {
     return workbook.sheetRefList.size();
   }
 
-  private final Map<Integer, SheetReader> sheetReaderMap = new HashMap<>();
-
-  private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
-
   public void setDateFormat(DateFormat dateFormat) {
     Objects.requireNonNull(dateFormat);
-    this.dateFormat = dateFormat;
+    context.dateFormat = dateFormat;
   }
-
-  private final Function<Date, String> dateToStr = date -> date == null ? null : dateFormat.format(date);
 
   public Sheet sheet(int index) {
     {
@@ -166,13 +164,11 @@ public class XlsxReader implements AutoCloseable {
       SheetRef ref = workbook.sheetRefList.get(index);
       SheetData sheetData = sheetDataMap.get(ref.id);
       Objects.requireNonNull(sheetData, "index = " + index + ", sheet id = " + ref.id);
-      SheetReader sheetReader = new SheetReader(styles, storedStrings, dateToStr, ref, sheetData);
+      SheetReader sheetReader = new SheetReader(context, ref, sheetData);
       sheetReaderMap.put(index, sheetReader);
       return sheetReader;
     }
   }
-
-  private Sheet tabSelectedSheet = null;
 
   public Sheet tabSelectedSheet() {
     if (tabSelectedSheet != null) {
@@ -187,6 +183,17 @@ public class XlsxReader implements AutoCloseable {
         }
       }
       throw new RuntimeException("No tab selected sheet: sheet count = " + sheetCount());
+    }
+  }
+
+  @SuppressWarnings("SameParameterValue")
+  void printSharedStrings(PrintStream out) {
+    long strCount = context.storedStrings.strCount();
+    if (strCount == 0) return;
+    int len = ("" + (strCount - 1)).length();
+
+    for (int i = 0; i < strCount; i++) {
+      out.println(UtilOffice.toLenLeft(len, "" + i, " ") + " - " + context.storedStrings.get(i));
     }
   }
 }

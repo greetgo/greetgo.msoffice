@@ -44,7 +44,7 @@ public class SheetHandler extends AbstractXmlHandler {
       ColData col = new ColData();
       this.col = col;
       row.cols.add(col);
-      col.col = parseCellCoordinate(attributes.getValue("r"))[0];
+      col.col = parseCellCoordinate(attributes.getValue("r"))[0] - 1;
       col.valueType = ValueType.parse(attributes.getValue("t"));
       col.style = strToIntOr(attributes.getValue("s"), 0);
       return;

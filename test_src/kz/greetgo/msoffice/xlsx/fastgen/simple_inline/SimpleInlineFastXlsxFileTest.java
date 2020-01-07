@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Random;
 
 public class SimpleInlineFastXlsxFileTest {
-  @Test(groups = "long")
+  @Test(enabled = false)
   public void createAndParseBigFile() throws Exception {
     final int count = 100, page = 10;
 

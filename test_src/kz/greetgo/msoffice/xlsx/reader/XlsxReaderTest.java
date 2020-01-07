@@ -1,5 +1,8 @@
 package kz.greetgo.msoffice.xlsx.reader;
 
+import kz.greetgo.msoffice.xlsx.reader.model.BorderStyle;
+import kz.greetgo.msoffice.xlsx.reader.model.HorizontalAlign;
+import kz.greetgo.msoffice.xlsx.reader.model.VerticalAlign;
 import org.testng.annotations.Test;
 
 import java.io.InputStream;
@@ -22,14 +25,43 @@ public class XlsxReaderTest {
     try (XlsxReader xlsxReader = new XlsxReader()) {
       xlsxReader.read(inputStream);
 
+//      System.out.println("34jh2b54234 :: shared strings...");
+//      xlsxReader.printSharedStrings(System.out);
+//      System.out.println("34jh2b54234 :: shared strings end");
+
       assertThat(xlsxReader.sheetCount()).isEqualTo(1);
 
-      Sheet sheet = xlsxReader.sheet(0);
+      Sheet sheet = xlsxReader.tabSelectedSheet();
 
       assertThat(sheet.rowCount()).isEqualTo(31);
+
       assertThat(sheet.row(7).cell(2).asText()).isEqualTo("B1");
       assertThat(sheet.cell(7, 2).asText()).isEqualTo("B1");
+      assertThat(sheet.cell(8, 2).asText()).isEqualTo("B2");
 
+//      System.out.println("wej1hbn43bn :: 8 2 topStyle    = " + sheet.cell(8, 2).borders().topStyle());
+//      System.out.println("wej1hbn43bn :: 8 2 bottomStyle = " + sheet.cell(8, 2).borders().bottomStyle());
+//      System.out.println("wej1hbn43bn :: 0 0 bottomStyle = " + sheet.cell(0, 0).borders().bottomStyle());
+
+      assertThat(sheet.cell(8, 2).borders().topStyle()).isEqualTo(BorderStyle.dotted);
+      assertThat(sheet.cell(8, 2).borders().bottomStyle()).isEqualTo(BorderStyle.dashDotDot);
+      assertThat(sheet.cell(0, 0).borders().bottomStyle()).isEqualTo(BorderStyle.NONE);
+
+//      System.out.println("wej1hbn43bn :: 4 9 hor  align = " + sheet.cell(4, 9).horAlign());
+//      System.out.println("wej1hbn43bn :: 4 9 vert align = " + sheet.cell(4, 9).vertAlign());
+
+      assertThat(sheet.cell(4, 9).horAlign()).isEqualTo(HorizontalAlign.center);
+      assertThat(sheet.cell(4, 9).vertAlign()).isEqualTo(VerticalAlign.center);
+
+      assertThat(sheet.cell(6, 7).horAlign()).isEqualTo(HorizontalAlign.right);
+      assertThat(sheet.cell(6, 7).vertAlign()).isEqualTo(VerticalAlign.top);
+
+      assertThat(sheet.cell(110, 110).horAlign()).isEqualTo(HorizontalAlign.left);
+      assertThat(sheet.cell(110, 110).vertAlign()).isEqualTo(VerticalAlign.bottom);
+
+      assertThat(sheet.cell(16, 8).asText()).isEqualTo("Note");
+      assertThat(sheet.cell(16, 8).horAlign()).isEqualTo(HorizontalAlign.left);
+      assertThat(sheet.cell(16, 8).vertAlign()).isEqualTo(VerticalAlign.bottom);
     }
   }
 
