@@ -9,4 +9,9 @@ public class CellXf {
 
   public VerticalAlign verticalAlign = VerticalAlign.bottom;
   public HorizontalAlign horizontalAlign = HorizontalAlign.left;
+
+  public int borderId() {
+    Integer borderId = this.borderId;
+    return borderId == null ? 0 : borderId;
+  }
 }

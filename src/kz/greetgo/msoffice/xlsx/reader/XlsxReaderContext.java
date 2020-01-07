@@ -3,6 +3,7 @@ package kz.greetgo.msoffice.xlsx.reader;
 import kz.greetgo.msoffice.xlsx.reader.model.Border4;
 import kz.greetgo.msoffice.xlsx.reader.model.BorderSide;
 import kz.greetgo.msoffice.xlsx.reader.model.BorderStyle;
+import kz.greetgo.msoffice.xlsx.reader.model.CellXf;
 import kz.greetgo.msoffice.xlsx.reader.model.ColData;
 import kz.greetgo.msoffice.xlsx.reader.model.StylesData;
 
@@ -58,7 +59,10 @@ public class XlsxReaderContext {
   private static final Border4 EMPTY = new Border4();
 
   private Border4 getBorder4(int style) {
-    if (style == 0 && styles.border4List.isEmpty()) return EMPTY;
-    return styles.border4List.get(style);
+    if (style == 0 && styles.cellXfList.isEmpty()) return EMPTY;
+    CellXf cellXf = styles.cellXfList.get(style);
+    int borderId = cellXf.borderId();
+    if (borderId == 0 && styles.border4List.isEmpty()) return EMPTY;
+    return styles.border4List.get(borderId);
   }
 }

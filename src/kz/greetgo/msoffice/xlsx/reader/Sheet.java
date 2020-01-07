@@ -1,5 +1,7 @@
 package kz.greetgo.msoffice.xlsx.reader;
 
+import kz.greetgo.msoffice.xlsx.reader.model.MergeCell;
+
 public interface Sheet {
   String name();
 
@@ -14,4 +16,10 @@ public interface Sheet {
   }
 
   boolean tabSelected();
+
+  int frozenRowCount();
+
+  int cellMergeCount();
+
+  MergeCell cellMerge(int i);
 }

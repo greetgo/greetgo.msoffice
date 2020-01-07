@@ -16,6 +16,37 @@ public class XlsxReaderTest {
     InputStream inputStream = getClass().getResourceAsStream("xlsx/ok.xlsx");
     try (XlsxReader xlsxReader = new XlsxReader()) {
       xlsxReader.read(inputStream);
+
+      Sheet sheet = xlsxReader.tabSelectedSheet();
+
+      System.out.println("j436v6v27 :: tabSelectedSheet().cell(2, 0).borders().bottomStyle() = " + sheet.cell(2, 0).borders().bottomStyle());
+
+      System.out.println("j436v6v27 :: tabSelectedSheet().name() = " + sheet.name());
+      System.out.println("j436v6v27 :: tabSelectedSheet().frozenRowCount() = " + sheet.frozenRowCount());
+      System.out.println("j436v6v27 :: tabSelectedSheet().rowCount() = " + sheet.rowCount());
+      System.out.println("j436v6v27 :: tabSelectedSheet().cellMergeCount() = " + sheet.cellMergeCount());
+      for (int i = 0; i < sheet.cellMergeCount(); i++) {
+        System.out.println("j436v6v27 :: tabSelectedSheet().sheet.cellMerge(" + i + ") = " + sheet.cellMerge(i));
+      }
+
+      assertThat(sheet.frozenRowCount()).isEqualTo(3);
+      assertThat(sheet.name()).isEqualTo("Это имя бизнес-объекта");
+      assertThat(sheet.cell(2, 0).borders().bottomStyle()).isEqualTo(BorderStyle._double);
+      assertThat(sheet.cell(2, 1).borders().bottomStyle()).isEqualTo(BorderStyle._double);
+      assertThat(sheet.cell(2, 2).borders().bottomStyle()).isEqualTo(BorderStyle._double);
+      assertThat(sheet.cell(2, 3).borders().bottomStyle()).isEqualTo(BorderStyle._double);
+
+      for (int i = 0; i < sheet.rowCount(); i++) {
+
+        StringBuilder sb = new StringBuilder();
+        for (int j = 0; j < 16; j++) {
+          sb.append(sheet.cell(i, j).asText()).append(' ');
+        }
+        sb.append('\n');
+        System.out.println(sb);
+
+      }
+
     }
   }
 

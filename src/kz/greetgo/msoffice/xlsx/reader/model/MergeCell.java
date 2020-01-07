@@ -42,7 +42,7 @@ public class MergeCell {
 
   @Override
   public String toString() {
-    return "MergeCell{" + "rowFrom=" + rowFrom + ", rowTo=" + rowTo + ", colFrom=" + colFrom + ", colTo=" + colTo + '}';
+    return "MergeCell{rows=" + rowFrom + ".." + rowTo + ", cols=" + colFrom + ".." + colTo + '}';
   }
 
   public void writeBytes(byte[] buffer, int offset) {

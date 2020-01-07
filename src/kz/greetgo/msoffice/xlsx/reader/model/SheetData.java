@@ -22,6 +22,8 @@ public class SheetData implements AutoCloseable {
 
   public boolean tabSelected = false;
 
+  public int frozenRowCount = 0;
+
   public SheetData(int id, Function<String, Path> createTmpFile) {
     this.id = id;
     rowRefList = new RefList(createTmpFile.apply("sheet" + id + "-row-ref-list"));

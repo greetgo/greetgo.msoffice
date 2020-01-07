@@ -1,6 +1,7 @@
 package kz.greetgo.msoffice.xlsx.reader;
 
 import kz.greetgo.msoffice.util.UtilOffice;
+import kz.greetgo.msoffice.util.XmlUtil;
 import kz.greetgo.msoffice.xlsx.reader.model.ColData;
 import kz.greetgo.msoffice.xlsx.reader.model.ColumnInfo;
 import kz.greetgo.msoffice.xlsx.reader.model.MergeCell;
@@ -34,6 +35,7 @@ public class SheetHandler extends AbstractXmlHandler {
       columnInfo.width = UtilOffice.strToBd(attributes.getValue("width"));
       return;
     }
+
     if ("/worksheet/sheetData/row".equals(tagPath)) {
       RowData row = this.row = new RowData();
       rowIndex = Integer.parseInt(attributes.getValue("r")) - 1;
@@ -64,6 +66,16 @@ public class SheetHandler extends AbstractXmlHandler {
       if ("1".equals(attributes.getValue("tabSelected"))) {
         sheet.tabSelected = true;
       }
+      return;
+    }
+
+    if ("/worksheet/sheetViews/sheetView/pane".equals(tagPath)) {
+
+      if ("frozen".equals(attributes.getValue("state"))) {
+        sheet.frozenRowCount = Integer.parseInt(attributes.getValue("ySplit"));
+        return;
+      }
+
       return;
     }
 

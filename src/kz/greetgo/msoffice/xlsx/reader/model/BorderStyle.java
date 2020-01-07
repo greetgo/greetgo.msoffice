@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public enum BorderStyle {
   hair, dotted, dashDotDot, dashDot, dashed, thin, mediumDashDotDot,
-  slantDashDot, mediumDashDot, mediumDashed, medium, thick, double1,
+  slantDashDot, mediumDashDot, mediumDashed, medium, thick, _double,
 
   NONE;
 
@@ -17,8 +17,8 @@ public enum BorderStyle {
     Map<String, BorderStyle> map1 = new HashMap<>();
     for (BorderStyle value : values()) {
       String name = value.name();
-      if (name.endsWith("1")) {
-        name = name.substring(0, name.length() - 1);
+      if (name.startsWith("_")) {
+        name = name.substring(1);
       }
       map1.put(name, value);
     }

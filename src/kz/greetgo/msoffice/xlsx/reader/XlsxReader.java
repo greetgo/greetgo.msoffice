@@ -81,15 +81,14 @@ public class XlsxReader implements AutoCloseable {
     context.storedStrings.close();
     tmpFiles.stream().map(Path::toFile).forEach(File::delete);
   }
+
   private static ZipInputStream wrapInZip(InputStream inputStream) {
     return inputStream instanceof ZipInputStream
       ? (ZipInputStream) inputStream
       : new ZipInputStream(inputStream, StandardCharsets.UTF_8);
   }
+
   private static final Pattern SHEET_FILE = Pattern.compile("xl/worksheets/sheet(\\d+)\\.xml");
-
-
-
 
   public void read(InputStream inputStream) {
     try (ZipInputStream zipInputStream = wrapInZip(inputStream)) {
