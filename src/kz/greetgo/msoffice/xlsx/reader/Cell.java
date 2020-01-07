@@ -7,5 +7,7 @@ public interface Cell {
 
   Date asDate();
 
+  boolean isDate();
+
   String format();
 }

@@ -16,12 +16,16 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
@@ -144,6 +148,15 @@ public class XlsxReader implements AutoCloseable {
 
   private final Map<Integer, SheetReader> sheetReaderMap = new HashMap<>();
 
+  private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+
+  public void setDateFormat(DateFormat dateFormat) {
+    Objects.requireNonNull(dateFormat);
+    this.dateFormat = dateFormat;
+  }
+
+  private final Function<Date, String> dateToStr = date -> date == null ? null : dateFormat.format(date);
+
   public Sheet sheet(int index) {
     {
       SheetReader sheetReader = sheetReaderMap.get(index);
@@ -153,7 +166,7 @@ public class XlsxReader implements AutoCloseable {
       SheetRef ref = workbook.sheetRefList.get(index);
       SheetData sheetData = sheetDataMap.get(ref.id);
       Objects.requireNonNull(sheetData, "index = " + index + ", sheet id = " + ref.id);
-      SheetReader sheetReader = new SheetReader(styles, storedStrings, ref, sheetData);
+      SheetReader sheetReader = new SheetReader(styles, storedStrings, dateToStr, ref, sheetData);
       sheetReaderMap.put(index, sheetReader);
       return sheetReader;
     }

@@ -37,7 +37,10 @@ public class StylesData {
     return xf;
   }
 
+  private static final CellXf EMPTY_STYLES = new CellXf();
+
   public CellXf getCellXf(int style) {
+    if (style == 0 && cellXfList.isEmpty()) return EMPTY_STYLES;
     return cellXfList.get(style);
   }
 }

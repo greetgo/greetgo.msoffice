@@ -560,4 +560,11 @@ public class UtilOffice {
     }
     return null;
   }
+
+  public static boolean isFormatForDate(String format) {
+    if (format == null) return false;
+    format = format.trim().toLowerCase();
+    return format.contains("mm") || format.contains("yy") || format.contains("dd")
+      || format.contains("hh") || format.contains("ss");
+  }
 }
