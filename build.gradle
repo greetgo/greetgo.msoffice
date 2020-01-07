@@ -63,7 +63,7 @@ sourceSets.test.resources {
 jar {
   manifest {
     attributes 'Implementation-Title': project.name
-    attributes 'Implementation-Version': version
+    attributes 'Implementation-Version': archiveVersion
     attributes 'Implementation-Vendor': "greetgo!"
     attributes 'Created-By': System.getProperty("user.name")
     //attributes 'Created-At': new Date().format("yyyy-MM-dd/HH:mm:ss")
