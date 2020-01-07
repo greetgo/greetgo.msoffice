@@ -17,6 +17,15 @@ public class ColData {
   public int style;
   public String value;
 
+  public static ColData empty(int colIndex) {
+    ColData ret = new ColData();
+    ret.col = colIndex;
+    ret.style = 0;
+    ret.valueType = ValueType.UNKNOWN;
+    ret.value = null;
+    return ret;
+  }
+
   public int byteSize() {
     return SIZEOF_SHORT + SIZEOF_INT * 2 + BinUtil.sizeOfStr(value);
   }

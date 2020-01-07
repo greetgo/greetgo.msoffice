@@ -49,6 +49,19 @@ public class XlsxReaderTest {
         System.out.println();
       }
 
+      assertThat(xlsxReader.tabSelectedSheet().name()).isEqualTo("Даты подполья");
+
+      {
+        Sheet sheet = xlsxReader.tabSelectedSheet();
+        assertThat(sheet.cell(10, 10).asText()).isNull();
+      }
+
+      {
+        Sheet sheet = xlsxReader.sheet(2);
+        System.out.println("32gv4v :: cell 3 0 = " + sheet.cell(3, 0).asText() + " :: " + sheet.cell(3, 0).format());
+        System.out.println("          cell 3 0 asDate = " + sheet.cell(3, 0).asDate());
+      }
+
     }
   }
 

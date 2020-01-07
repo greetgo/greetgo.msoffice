@@ -41,6 +41,8 @@ public class RowReader implements Row {
 
   @Override
   public Cell cell(int i) {
+    if (i < 0) throw new RuntimeException("Illegal column index = " + i);
+    if (i >= rowData.cols.size()) return CellReader.empty(rowIndex, i);
     return cells().get(i);
   }
 

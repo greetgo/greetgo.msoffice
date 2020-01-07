@@ -59,7 +59,14 @@ public class SheetHandler extends AbstractXmlHandler {
 
     if ("/worksheet/sheetData/row/c/v".equals(tagPath)) return;
 
-//    System.out.println("j43bh25v6 ::     open " + tagPath + " " + XmlUtil.toStr(attributes) + " for " + sheet.name);
+    if ("/worksheet/sheetViews/sheetView".equals(tagPath)) {
+      if ("1".equals(attributes.getValue("tabSelected"))) {
+        sheet.tabSelected = true;
+      }
+      return;
+    }
+
+//    System.out.println("j43bh25v6 ::     open " + tagPath + " " + XmlUtil.toStr(attributes) + " for " + sheet.id);
   }
 
   @Override

@@ -132,6 +132,7 @@ public class XlsxReader implements AutoCloseable {
   }
 
   private static void doParsing(InputStream inputStream, ContentHandler contentHandler) throws SAXException, IOException {
+    //noinspection deprecation
     XMLReader reader = XMLReaderFactory.createXMLReader();
     reader.setContentHandler(contentHandler);
     reader.parse(new InputSource(UtilOffice.copy(inputStream)));
@@ -158,4 +159,21 @@ public class XlsxReader implements AutoCloseable {
     }
   }
 
+  private Sheet tabSelectedSheet = null;
+
+  public Sheet tabSelectedSheet() {
+    if (tabSelectedSheet != null) {
+      return tabSelectedSheet;
+    }
+
+    {
+      for (int i = 0; i < sheetCount(); i++) {
+        Sheet sheet = sheet(i);
+        if (sheet.tabSelected()) {
+          return tabSelectedSheet = sheet;
+        }
+      }
+      throw new RuntimeException("No tab selected sheet: sheet count = " + sheetCount());
+    }
+  }
 }

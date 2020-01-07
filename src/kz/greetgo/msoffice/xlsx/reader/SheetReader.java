@@ -38,4 +38,9 @@ public class SheetReader implements Sheet {
   public Row row(int rowIndex) {
     return new RowReader(styles, storedStrings, rowIndex, sheetData.getRowData(rowIndex));
   }
+
+  @Override
+  public boolean tabSelected() {
+    return sheetData.tabSelected;
+  }
 }

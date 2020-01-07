@@ -20,6 +20,8 @@ public class SheetData implements AutoCloseable {
   private final RefList mergeCellRefList;
   private final RandomAccessFile data;
 
+  public boolean tabSelected = false;
+
   public SheetData(int id, Function<String, Path> createTmpFile) {
     this.id = id;
     rowRefList = new RefList(createTmpFile.apply("sheet" + id + "-row-ref-list"));
@@ -69,9 +71,8 @@ public class SheetData implements AutoCloseable {
   }
 
   public RowData getRowData(int index) {
-    if (index < 0 || index >= rowSize) {
-      throw new IndexOutOfBoundsException("index = " + index + ", rowSize = " + rowSize);
-    }
+    if (index < 0) throw new IllegalArgumentException("index = " + index + " bug must be >= 0");
+    if (index >= rowSize) return RowData.empty(index);
 
     try {
       Ref ref = rowRefList.get(index);

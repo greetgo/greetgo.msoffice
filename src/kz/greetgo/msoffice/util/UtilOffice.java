@@ -12,6 +12,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.math.RoundingMode;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -368,18 +369,19 @@ public class UtilOffice {
    * @return java-представление даты-времени
    */
   public static Date excelToDate(String excelValue) {
-    if (excelValue == null) return null;
+    if (excelValue == null || excelValue.trim().length() == 0) return null;
+
     Calendar c = epochStart();
 
     BigDecimal value = new BigDecimal(excelValue);
 
-    c.add(Calendar.DAY_OF_YEAR, value.setScale(0, BigDecimal.ROUND_DOWN).intValueExact() - EXCEL_DATE_MAGIC);
+    c.add(Calendar.DAY_OF_YEAR, value.setScale(0, RoundingMode.DOWN).intValueExact() - EXCEL_DATE_MAGIC);
 
-    BigDecimal afterZero = value.subtract(value.setScale(0, BigDecimal.ROUND_DOWN));
+    BigDecimal afterZero = value.subtract(value.setScale(0, RoundingMode.DOWN));
 
     BigDecimal millis = afterZero.multiply(new BigDecimal(MILLIS_IN_DAY));
 
-    millis = millis.setScale(0, BigDecimal.ROUND_HALF_UP);
+    millis = millis.setScale(0, RoundingMode.HALF_UP);
 
     return new Date(c.getTimeInMillis() + millis.longValueExact());
   }

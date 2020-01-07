@@ -12,4 +12,6 @@ public interface Sheet {
   default Cell cell(int rowIndex, int colIndex) {
     return row(rowIndex).cell(colIndex);
   }
+
+  boolean tabSelected();
 }

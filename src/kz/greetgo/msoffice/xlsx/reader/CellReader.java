@@ -1,15 +1,19 @@
 package kz.greetgo.msoffice.xlsx.reader;
 
+import kz.greetgo.msoffice.util.UtilOffice;
 import kz.greetgo.msoffice.xlsx.reader.model.CellXf;
 import kz.greetgo.msoffice.xlsx.reader.model.ColData;
 import kz.greetgo.msoffice.xlsx.reader.model.NumFmtData;
 import kz.greetgo.msoffice.xlsx.reader.model.StylesData;
+
+import java.util.Date;
 
 import static kz.greetgo.msoffice.util.UtilOffice.fnn;
 
 public class CellReader implements Cell {
   private final StylesData styles;
   private final StoredStrings storedStrings;
+  @SuppressWarnings({"FieldCanBeLocal", "unused"})
   private final int rowIndex;
   private final ColData col;
 
@@ -18,6 +22,12 @@ public class CellReader implements Cell {
     this.storedStrings = storedStrings;
     this.rowIndex = rowIndex;
     this.col = col;
+  }
+
+  public static Cell empty(int rowIndex, int colIndex) {
+    ColData colData = ColData.empty(colIndex);
+    StylesData stylesData = new StylesData();
+    return new CellReader(stylesData, null, rowIndex, colData);
   }
 
   @Override
@@ -44,5 +54,10 @@ public class CellReader implements Cell {
       NumFmtData numFmtData = styles.numFmtDataIdMap.get(cellXf.numFmtId);
       return numFmtData == null ? "" : fnn(numFmtData.formatCode, "");
     }
+  }
+
+  @Override
+  public Date asDate() {
+    return UtilOffice.excelToDate(col.value);
   }
 }

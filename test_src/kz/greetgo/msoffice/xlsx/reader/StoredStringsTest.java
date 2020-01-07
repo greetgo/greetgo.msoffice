@@ -17,7 +17,7 @@ public class StoredStringsTest {
   public void readWrite() {
     long startedAt = System.currentTimeMillis();
 
-    Path dir = Paths.get("build/StoredStringsTest/test1");
+    Path dir = Paths.get("build/StoredStringsTest/readWrite");
     dir.toFile().mkdirs();
 
     List<String> list = new ArrayList<>();
@@ -72,8 +72,6 @@ public class StoredStringsTest {
       System.out.println("3h25v325 :: total test time = " + (System.currentTimeMillis() - startedAt));
 
       assertThat(ss.strCount()).isEqualTo(list.size());
-
-
     }
 
   }

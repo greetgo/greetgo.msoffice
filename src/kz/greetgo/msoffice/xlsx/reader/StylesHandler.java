@@ -1,6 +1,5 @@
 package kz.greetgo.msoffice.xlsx.reader;
 
-import kz.greetgo.msoffice.util.XmlUtil;
 import kz.greetgo.msoffice.xlsx.reader.model.Border;
 import kz.greetgo.msoffice.xlsx.reader.model.Border4;
 import kz.greetgo.msoffice.xlsx.reader.model.BorderSide;
@@ -27,12 +26,12 @@ public class StylesHandler extends AbstractXmlHandler {
     this.styles = styles;
   }
 
-  private FontData font;
-  private Border4 border4;
-  private CellXf cellXf;
+  private FontData font = null;
+  private Border4 border4 = null;
+  private CellXf cellXf = null;
 
   @SuppressWarnings("FieldCanBeLocal")
-  private CellStyleXf cellStyleXf;
+  private CellStyleXf cellStyleXf = null;
 
   private static final Pattern PATH_BORDER = Pattern.compile(
     "/styleSheet/borders/border/(left|right|top|bottom|diagonal)");
