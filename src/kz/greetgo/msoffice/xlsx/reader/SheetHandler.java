@@ -16,6 +16,7 @@ public class SheetHandler extends AbstractXmlHandler {
 
   private final SheetData sheet;
   private RowData row;
+  private int rowIndex;
   private ColData col;
 
   public SheetHandler(SheetData sheet) {
@@ -35,7 +36,7 @@ public class SheetHandler extends AbstractXmlHandler {
     }
     if ("/worksheet/sheetData/row".equals(tagPath)) {
       RowData row = this.row = new RowData();
-      row.index = Integer.parseInt(attributes.getValue("r")) - 1;
+      rowIndex = Integer.parseInt(attributes.getValue("r")) - 1;
       row.height = UtilOffice.strToBd(attributes.getValue("ht"));
       return;
     }
@@ -77,7 +78,7 @@ public class SheetHandler extends AbstractXmlHandler {
     }
 
     if ("/worksheet/sheetData/row".equals(tagPath)) {
-      sheet.addRow(row);
+      sheet.addRow(rowIndex, row);
       return;
     }
   }

@@ -11,7 +11,6 @@ public abstract class AbstractModelTest {
   public static void assertRowDataEquals(RowData actual, RowData expected, String d) {
     assertThat(actual).describedAs(d).isNotNull();
     assertThat(actual.height).describedAs(d).isEqualTo(expected.height);
-    assertThat(actual.index).describedAs(d).isEqualTo(expected.index);
     assertThat(actual.cols).describedAs(d).hasSameSizeAs(expected.cols);
     for (int i = 0, s = actual.cols.size(); i < s; i++) {
 

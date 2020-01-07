@@ -15,8 +15,6 @@ public class RowData {
   /**
    * index of row from zero
    */
-  // TODO pompei удалить это поле - оно не нужно
-  public int index;
   public BigDecimal height;
   public final List<ColData> cols = new ArrayList<>();
 
@@ -24,17 +22,14 @@ public class RowData {
     return height == null ? 15 : height.doubleValue();
   }
 
-  public static RowData empty(int index) {
-    RowData ret = new RowData();
-    ret.index = index;
-    return ret;
+  private static final RowData EMPTY = new RowData();
+
+  public static RowData empty() {
+    return EMPTY;
   }
 
   public void writeTo(byte[] buffer, int offset) {
     int i = offset;
-
-    writeInt(index, buffer, i);
-    i += SIZEOF_INT;
 
     writeBd(height, buffer, i);
     i += sizeOfBd(height);
@@ -54,9 +49,6 @@ public class RowData {
 
     RowData ret = new RowData();
 
-    ret.index = readInt(buffer, i);
-    i += SIZEOF_INT;
-
     ret.height = readBd(buffer, i);
     i += sizeOfBd(ret.height);
 
@@ -73,7 +65,7 @@ public class RowData {
   }
 
   public int byteSize() {
-    int ret = SIZEOF_INT + sizeOfBd(height) + SIZEOF_INT;
+    int ret = sizeOfBd(height) + SIZEOF_INT;
     for (ColData col : cols) {
       ret += col.byteSize();
     }

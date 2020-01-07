@@ -29,16 +29,17 @@ public class SheetDataTest extends AbstractModelTest {
 
     List<RowData> rows = new ArrayList<>();
 
-    rows.add(RowData.empty(0));
-    rows.add(RowData.empty(1));
-    rows.add(RowData.empty(2));
+    rows.add(RowData.empty());
+    rows.add(RowData.empty());
+    rows.add(RowData.empty());
 
     SheetData sheet = new SheetData(123, tmpDir("SheetDataTest-checkRowsLogic"));
 
     for (int i = 0; i < 10; i++) {
-      RowData row = UtilTest.rndRowData(rnd, rows.size());
+      RowData row = UtilTest.rndRowData(rnd);
+      int rowIndex = rows.size();
       rows.add(row);
-      sheet.addRow(row);
+      sheet.addRow(rowIndex, row);
     }
 
     for (int i = 0; i < rows.size(); i++) {

@@ -41,12 +41,7 @@ public class UtilTest {
   }
 
   public static RowData rndRowData(Random rnd) {
-    return rndRowData(rnd, null);
-  }
-
-  public static RowData rndRowData(Random rnd, Integer index) {
     RowData rowData = new RowData();
-    rowData.index = index == null ? rnd.nextInt() : index;
     rowData.height = rndBd(rnd);
 
     for (int i = 0, c = 10 + rnd.nextInt(10); i < c; i++) {

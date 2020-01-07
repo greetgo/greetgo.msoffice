@@ -33,15 +33,15 @@ public class SheetData implements AutoCloseable {
     }
   }
 
-  public void addRow(RowData rowData) {
-    if (rowData.index < rowSize) {
+  public void addRow(int index, RowData rowData) {
+    if (index < rowSize) {
       throw new IllegalArgumentException("index must be >= rowSize:"
-        + " index = " + rowData.index
+        + " index = " + index
         + ", rowSize = " + rowSize);
     }
 
-    while (rowSize < rowData.index) {
-      append(RowData.empty(rowSize));
+    while (rowSize < index) {
+      append(RowData.empty());
     }
     append(rowData);
   }
@@ -72,7 +72,7 @@ public class SheetData implements AutoCloseable {
 
   public RowData getRowData(int index) {
     if (index < 0) throw new IllegalArgumentException("index = " + index + " bug must be >= 0");
-    if (index >= rowSize) return RowData.empty(index);
+    if (index >= rowSize) return RowData.empty();
 
     try {
       Ref ref = rowRefList.get(index);
