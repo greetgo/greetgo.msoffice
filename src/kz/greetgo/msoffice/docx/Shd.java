@@ -1,15 +1,15 @@
 package kz.greetgo.msoffice.docx;
 
-import java.awt.Color;
-import java.io.PrintStream;
-
 import kz.greetgo.msoffice.util.UtilOffice;
+
+import java.awt.*;
+import java.io.PrintStream;
 
 public class Shd implements XmlWriter {
   private String val;
   private String fill;
   private Color color = null;
-  
+
   @Override
   public void write(PrintStream out) {
     if (getVal() == null) return;
@@ -20,27 +20,27 @@ public class Shd implements XmlWriter {
     }
     out.print("<w:shd w:val=\"" + val + "\" w:color=\"" + sColor + "\" w:fill=\"" + fill + "\" />");
   }
-  
+
   public String getVal() {
     return val;
   }
-  
+
   public void setVal(String val) {
     this.val = val;
   }
-  
+
   public Color getColor() {
     return color;
   }
-  
+
   public void setColor(Color color) {
     this.color = color;
   }
-  
+
   public String getFill() {
     return fill;
   }
-  
+
   public void setFill(String fill) {
     this.fill = fill;
   }

@@ -19,7 +19,7 @@ import java.util.zip.ZipInputStream;
  * <p>
  * Пример использования:
  * </p>
- *
+ * <p>
  * {@code XlsxParser p = new XlsxParser();}<br>
  * {@code p.load(inputStreamOfXlsxFileContent);}<br>
  * <br>

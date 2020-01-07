@@ -1,7 +1,8 @@
 package kz.greetgo.msoffice.docx;
 
-import java.io.PrintStream;
 import kz.greetgo.msoffice.PageOrientation;
+
+import java.io.PrintStream;
 
 public class Document extends DocumentFlow {
 

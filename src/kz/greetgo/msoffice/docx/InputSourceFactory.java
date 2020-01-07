@@ -6,7 +6,7 @@ import java.io.InputStream;
 
 public class InputSourceFactory {
   private InputSourceFactory() {}
-  
+
   public static InputSource createByFile(final File file) {
     return new InputSource() {
       @Override
@@ -15,7 +15,7 @@ public class InputSourceFactory {
       }
     };
   }
-  
+
   public static InputSource createByResource(final Class<?> classs, final String name) {
     return new InputSource() {
       @Override
@@ -24,7 +24,7 @@ public class InputSourceFactory {
       }
     };
   }
-  
+
   public static InputSource createByResource(final String name) {
     return new InputSource() {
       @Override

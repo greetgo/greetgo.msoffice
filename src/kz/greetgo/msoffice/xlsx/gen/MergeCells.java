@@ -6,9 +6,9 @@ import java.util.List;
 
 class MergeCells {
   MergeCells() {}
-  
+
   private final List<MergeCell> cells = new ArrayList<MergeCell>();
-  
+
   public void print(PrintStream out) {
     if (cells.size() == 0) return;
     out.println("<mergeCells count=\"" + cells.size() + "\">");
@@ -17,7 +17,7 @@ class MergeCells {
     }
     out.println("</mergeCells>");
   }
-  
+
   public void addMerge(int rowFrom, int colFrom, int rowTo, int colTo) {
     MergeCell x = new MergeCell();
     x.colFrom = colFrom - 1;

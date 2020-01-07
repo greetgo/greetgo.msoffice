@@ -6,7 +6,7 @@ import java.util.List;
 
 class Styles {
   private final List<Fill> fills = new ArrayList<Fill>();
-  
+
   int fillIndex(Fill fill) {
     if (fill == null) fill = new PatternFill(PatternFillType.none);
     int index = 0;
@@ -17,9 +17,9 @@ class Styles {
     fills.add(fill.copy());
     return index;
   }
-  
+
   private final List<Borders> bordersList = new ArrayList<Borders>();
-  
+
   int bordersIndex(Borders borders) {
     if (borders == null) borders = new Borders();
     int index = 0;
@@ -30,9 +30,9 @@ class Styles {
     bordersList.add(new Borders(borders));
     return index;
   }
-  
+
   private final List<Font> fonts = new ArrayList<Font>();
-  
+
   int fontIndex(Font font) {
     if (font == null) font = new Font();
     int index = 0;
@@ -43,9 +43,9 @@ class Styles {
     fonts.add(new Font(font));
     return index;
   }
-  
+
   private final List<Style> styles = new ArrayList<Style>();
-  
+
   int styleIndex(Style style) {
     int index = 0;
     for (Style s : styles) {
@@ -55,15 +55,15 @@ class Styles {
     styles.add(style.copy());
     return index;
   }
-  
+
   public Styles() {
     fills.add(new PatternFill(PatternFillType.none));
     bordersList.add(new Borders());
   }
-  
+
   void print(PrintStream out) {
     indexAll();
-    
+
     out.println("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
     out.println("<styleSheet xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\">");
     NumFmt.printAll(out);
@@ -74,13 +74,13 @@ class Styles {
     printCellXfs(out);
     out.println("</styleSheet>");
   }
-  
+
   private void printCellStyleXfs(PrintStream out) {
     out.println("<cellStyleXfs count=\"1\">");
     out.println("<xf numFmtId=\"0\" fontId=\"0\" fillId=\"0\" borderId=\"0\" />");
     out.println("</cellStyleXfs>");
   }
-  
+
   private void indexAll() {
     for (Style style : styles) {
       fontIndex(style.font);
@@ -88,7 +88,7 @@ class Styles {
       bordersIndex(style.borders);
     }
   }
-  
+
   private void printFonts(PrintStream out) {
     out.println("<fonts count=\"" + fonts.size() + "\">");
     for (Font font : fonts) {
@@ -96,7 +96,7 @@ class Styles {
     }
     out.println("</fonts>");
   }
-  
+
   private void printFills(PrintStream out) {
     out.println("<fills count=\"" + fills.size() + "\">");
     for (Fill fill : fills) {
@@ -104,7 +104,7 @@ class Styles {
     }
     out.println("</fills>");
   }
-  
+
   private void printBorders(PrintStream out) {
     out.println("<borders count=\"" + bordersList.size() + "\">");
     for (Borders borders : bordersList) {
@@ -112,7 +112,7 @@ class Styles {
     }
     out.println("</borders>");
   }
-  
+
   private void printCellXfs(PrintStream out) {
     out.println("<cellXfs count=\"" + bordersList.size() + "\">");
     for (Style style : styles) {
