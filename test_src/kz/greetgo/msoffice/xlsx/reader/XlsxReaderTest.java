@@ -128,13 +128,23 @@ public class XlsxReaderTest {
     }
   }
 
-
   @Test
   public void book2() {
     InputStream inputStream = getClass().getResourceAsStream("xlsx/book-2.xlsx");
     try (XlsxReader xlsxReader = new XlsxReader()) {
       xlsxReader.read(inputStream);
       System.out.println("54hb325b3 :: xlsxReader.tabSelectedSheet().name() = " + xlsxReader.tabSelectedSheet().name());
+    }
+  }
+
+  @Test
+  public void book3() {
+    InputStream inputStream = getClass().getResourceAsStream("xlsx/book-3.xlsx");
+    try (XlsxReader xlsxReader = new XlsxReader()) {
+      xlsxReader.read(inputStream);
+      Sheet sheet = xlsxReader.tabSelectedSheet();
+      assertThat(sheet.cell(0, 0).asText()).isEqualTo("Заголовок 1");
+      //System.out.println("3h54bv :: sheet.cell(0, 0).asText() = " + sheet.cell(0, 0).asText());
     }
   }
 

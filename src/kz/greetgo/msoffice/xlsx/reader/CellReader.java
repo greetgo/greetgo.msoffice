@@ -39,6 +39,9 @@ public class CellReader implements Cell {
       case STR:
         return context.storedStrings.get(Long.parseLong(col.value));
 
+      case INLINE_STR:
+        return col.value;
+
       default:
         throw new RuntimeException("Unknown ValueType = " + col.valueType);
     }

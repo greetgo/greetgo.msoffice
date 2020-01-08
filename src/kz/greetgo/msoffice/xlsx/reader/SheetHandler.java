@@ -95,5 +95,12 @@ public class SheetHandler extends AbstractXmlHandler {
       sheet.addRow(rowIndex, row);
       return;
     }
+
+    if ("/worksheet/sheetData/row/c/is/t".equals(tagPath)) {
+      if (col.valueType == ValueType.INLINE_STR) {
+        col.value = text();
+      }
+      return;
+    }
   }
 }
