@@ -195,6 +195,10 @@ public class XlsxReader implements AutoCloseable {
       return tabSelectedSheet;
     }
 
+    if (sheetCount() == 0) {
+      throw new RuntimeException("No any sheet");
+    }
+
     {
       for (int i = 0; i < sheetCount(); i++) {
         Sheet sheet = sheet(i);
@@ -202,7 +206,7 @@ public class XlsxReader implements AutoCloseable {
           return tabSelectedSheet = sheet;
         }
       }
-      throw new RuntimeException("No tab selected sheet: sheet count = " + sheetCount());
+      return sheet(0);
     }
   }
 

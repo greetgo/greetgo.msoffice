@@ -10,7 +10,7 @@ apply plugin: 'maven'
 group = 'kz.greetgo'
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
-version = '0.5.0'
+version = '0.5.1'
 
 repositories {
   mavenLocal()

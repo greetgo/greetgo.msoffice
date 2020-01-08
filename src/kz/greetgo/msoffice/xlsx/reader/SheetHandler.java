@@ -1,7 +1,6 @@
 package kz.greetgo.msoffice.xlsx.reader;
 
 import kz.greetgo.msoffice.util.UtilOffice;
-import kz.greetgo.msoffice.util.XmlUtil;
 import kz.greetgo.msoffice.xlsx.reader.model.ColData;
 import kz.greetgo.msoffice.xlsx.reader.model.ColumnInfo;
 import kz.greetgo.msoffice.xlsx.reader.model.MergeCell;
@@ -72,7 +71,10 @@ public class SheetHandler extends AbstractXmlHandler {
     if ("/worksheet/sheetViews/sheetView/pane".equals(tagPath)) {
 
       if ("frozen".equals(attributes.getValue("state"))) {
-        sheet.frozenRowCount = Integer.parseInt(attributes.getValue("ySplit"));
+        String ySplit = attributes.getValue("ySplit");
+        if (ySplit != null && ySplit.trim().length() > 0) {
+          sheet.frozenRowCount = Math.round(Float.parseFloat(ySplit));
+        }
         return;
       }
 

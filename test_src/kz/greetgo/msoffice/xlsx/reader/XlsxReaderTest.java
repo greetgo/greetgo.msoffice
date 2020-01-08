@@ -128,4 +128,14 @@ public class XlsxReaderTest {
     }
   }
 
+
+  @Test
+  public void book2() {
+    InputStream inputStream = getClass().getResourceAsStream("xlsx/book-2.xlsx");
+    try (XlsxReader xlsxReader = new XlsxReader()) {
+      xlsxReader.read(inputStream);
+      System.out.println("54hb325b3 :: xlsxReader.tabSelectedSheet().name() = " + xlsxReader.tabSelectedSheet().name());
+    }
+  }
+
 }

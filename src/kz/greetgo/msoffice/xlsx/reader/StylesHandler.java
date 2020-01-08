@@ -45,7 +45,7 @@ public class StylesHandler extends AbstractXmlHandler {
     }
 
     if ("/styleSheet/fonts/font/sz".equals(tagPath)) {
-      font.size = Integer.valueOf(attributes.getValue("val"));
+      font.size = Double.valueOf(attributes.getValue("val"));
       return;
     }
 
