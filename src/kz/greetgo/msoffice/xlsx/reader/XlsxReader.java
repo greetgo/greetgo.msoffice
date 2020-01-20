@@ -160,7 +160,6 @@ public class XlsxReader implements AutoCloseable {
   }
 
   private static void doParsing(InputStream inputStream, ContentHandler contentHandler) throws SAXException, IOException {
-    //noinspection deprecation
     XMLReader reader = XMLReaderFactory.createXMLReader();
     reader.setContentHandler(contentHandler);
     reader.parse(new InputSource(UtilOffice.copy(inputStream)));
@@ -170,6 +169,7 @@ public class XlsxReader implements AutoCloseable {
     return workbook.sheetRefList.size();
   }
 
+  @SuppressWarnings("unused")
   public void setDateFormat(DateFormat dateFormat) {
     Objects.requireNonNull(dateFormat);
     context.dateFormat = dateFormat;
@@ -210,7 +210,7 @@ public class XlsxReader implements AutoCloseable {
     }
   }
 
-  @SuppressWarnings("SameParameterValue")
+  @SuppressWarnings({"SameParameterValue", "unused"})
   void printSharedStrings(PrintStream out) {
     long strCount = context.storedStrings.strCount();
     if (strCount == 0) return;
