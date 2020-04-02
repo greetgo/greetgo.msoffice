@@ -27,11 +27,13 @@ public class ProbeGenDocx {
       
       {
         Run частьАбзаца = para.createRun();
+        частьАбзаца.setFontName("Courier New");
         частьАбзаца.setUnderline(Underline.DOUBLE);
         частьАбзаца.addText("Вот часть абзаца дважды подчёркнутая,");
       }
       {
         Run частьАбзаца = para.createRun();
+        частьАбзаца.setFontName("Courier New");
         частьАбзаца.addText("а вот не подчёркнутая, ");
       }
       {

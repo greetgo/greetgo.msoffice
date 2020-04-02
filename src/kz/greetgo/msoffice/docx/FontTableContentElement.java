@@ -127,6 +127,18 @@ public class FontTableContentElement implements ContentElement {
         + " w:csb0=\"000001FF\" w:csb1=\"00000000\" />");
       elements.put(name, new FontElement(name, c.iterator()));
     }
+    {
+      String name = "Courier New";
+      c.clear();
+      c.add(" <w:panose1 w:val=\"02070309020205020404\" />");
+      c.add("<w:charset w:val=\"00\" />");
+      c.add("<w:family w:val=\"modern\" />");
+      c.add("<w:pitch w:val=\"fixed\" />");
+      c.add("<w:sig w:usb0=\"E0002AFF\" w:usb1=\"C0007843\"" +
+        " w:usb2=\"00000009\" w:usb3=\"00000000\"" +
+        " w:csb0=\"000001FF\" w:csb1=\"00000000\" />");
+      elements.put(name, new FontElement(name, c.iterator()));
+    }
   }
 
   @Override
