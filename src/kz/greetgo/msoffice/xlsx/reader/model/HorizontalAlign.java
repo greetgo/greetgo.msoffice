@@ -1,7 +1,7 @@
 package kz.greetgo.msoffice.xlsx.reader.model;
 
 public enum HorizontalAlign {
-  left, center, right;
+  left, center, right, general;
 
   public static HorizontalAlign valueOrNull(String str) {
     if (str == null) return null;
